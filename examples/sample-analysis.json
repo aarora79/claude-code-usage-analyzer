@@ -1,0 +1,357 @@
+{
+  "metadata": {
+    "analysis_period": {
+      "start_date": "2025-09-09",
+      "end_date": "2025-10-09",
+      "total_days": 31
+    },
+    "generated_at": "2025-10-09T21:08:50.033661",
+    "source": "ccusage CLI tool",
+    "pricing_source": "https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json"
+  },
+  "summary": {
+    "total_cost": 989.9040428999999,
+    "total_tokens": 1126304159,
+    "total_input_tokens": 178304,
+    "total_output_tokens": 1243028,
+    "total_cache_creation_tokens": 81262860,
+    "total_cache_read_tokens": 1043619967,
+    "overall_cache_efficiency": 92.65880434345443
+  },
+  "model_combinations": [
+    {
+      "models": [
+        "opus-4-1",
+        "sonnet-4"
+      ],
+      "days": 20
+    },
+    {
+      "models": [
+        "sonnet-4",
+        "sonnet-4-5"
+      ],
+      "days": 5
+    },
+    {
+      "models": [
+        "sonnet-4-5"
+      ],
+      "days": 5
+    },
+    {
+      "models": [
+        "sonnet-4"
+      ],
+      "days": 1
+    }
+  ],
+  "daily_statistics": {
+    "input_tokens": {
+      "mean": 5751.741935483871,
+      "median": 1382,
+      "p95": 30315.5,
+      "min": 150,
+      "max": 32101,
+      "total": 178304
+    },
+    "output_tokens": {
+      "mean": 40097.67741935484,
+      "median": 24119,
+      "p95": 101381.0,
+      "min": 671,
+      "max": 155491,
+      "total": 1243028
+    },
+    "cache_create": {
+      "mean": 2621382.580645161,
+      "median": 2525177,
+      "p95": 4850357.0,
+      "min": 65333,
+      "max": 4889013,
+      "total": 81262860
+    },
+    "cache_read": {
+      "mean": 33665160.22580645,
+      "median": 30549742,
+      "p95": 67909864.5,
+      "min": 139109,
+      "max": 99625038,
+      "total": 1043619967
+    },
+    "total_tokens": {
+      "mean": 36332392.22580645,
+      "median": 32582596,
+      "p95": 72665530.5,
+      "min": 205894,
+      "max": 103829819,
+      "total": 1126304159
+    },
+    "total_cost": {
+      "mean": 31.932388480645162,
+      "median": 29.535378299999998,
+      "p95": 65.153200725,
+      "min": 1.13687025,
+      "max": 75.28642365000005,
+      "total": 989.9040429
+    },
+    "cost_input": {
+      "mean": 0.019331225806451614,
+      "median": 0.00735,
+      "p95": 0.0931125,
+      "min": 0.000858,
+      "max": 0.096303,
+      "total": 0.599268
+    },
+    "cost_output": {
+      "mean": 0.9812883870967741,
+      "median": 0.812325,
+      "p95": 2.5412850000000002,
+      "min": 0.010065000000000001,
+      "max": 3.400065,
+      "total": 30.41994
+    },
+    "cost_cache_create": {
+      "mean": 15.00191806451613,
+      "median": 13.18659,
+      "p95": 26.43945375,
+      "min": 0.9049087499999999,
+      "max": 42.68202375,
+      "total": 465.05946
+    },
+    "cost_cache_read": {
+      "mean": 15.929850803225806,
+      "median": 12.1560489,
+      "p95": 36.06045135,
+      "min": 0.18403350000000002,
+      "max": 45.3064554,
+      "total": 493.8253749
+    },
+    "cache_efficiency": {
+      "mean": 90.17642741621484,
+      "median": 92.05415994923202,
+      "p95": 95.58526050813003,
+      "min": 60.709256101876406,
+      "max": 95.9503146201189,
+      "total": null
+    }
+  },
+  "model_statistics": {
+    "opus-4-1": {
+      "days_used": 20,
+      "cache_efficiency": 93.25730718327209,
+      "pricing_per_million_tokens": {
+        "input": 15.0,
+        "output": 75.0,
+        "cache_create": 18.75,
+        "cache_read": 1.5
+      },
+      "statistics": {
+        "input_tokens": {
+          "mean": 268.15,
+          "median": 267.5,
+          "p95": 466.1000000000002,
+          "total": 5363
+        },
+        "output_tokens": {
+          "mean": 9812.1,
+          "median": 9635.0,
+          "p95": 18642.250000000004,
+          "total": 196242
+        },
+        "cache_create": {
+          "mean": 534412.45,
+          "median": 492291.5,
+          "p95": 957542.4000000005,
+          "total": 10688249
+        },
+        "cache_read": {
+          "mean": 7530807.7,
+          "median": 8058841.0,
+          "p95": 14315724.350000003,
+          "total": 150616154
+        },
+        "total_cost": {
+          "mean": 22.056374737499997,
+          "median": 23.997105749999996,
+          "p95": 37.87684297500002,
+          "total": 441.12749475
+        },
+        "total_tokens": {
+          "mean": 8075300.4,
+          "median": 8625333.0,
+          "p95": 14941489.650000004,
+          "total": 161506008
+        },
+        "cost_input": {
+          "mean": 0.00402225,
+          "median": 0.0040125000000000004,
+          "p95": 0.006991500000000003,
+          "total": 0.080445
+        },
+        "cost_output": {
+          "mean": 0.7359074999999999,
+          "median": 0.722625,
+          "p95": 1.3981687500000002,
+          "total": 14.71815
+        },
+        "cost_cache_create": {
+          "mean": 10.020233437499998,
+          "median": 9.230465624999999,
+          "p95": 17.953920000000007,
+          "total": 200.40466874999998
+        },
+        "cost_cache_read": {
+          "mean": 11.29621155,
+          "median": 12.0882615,
+          "p95": 21.473586525000005,
+          "total": 225.924231
+        }
+      }
+    },
+    "sonnet-4": {
+      "days_used": 26,
+      "cache_efficiency": 93.51072069903195,
+      "pricing_per_million_tokens": {
+        "input": 3.0,
+        "output": 15.0,
+        "cache_create": 3.75,
+        "cache_read": 0.3
+      },
+      "statistics": {
+        "input_tokens": {
+          "mean": 2734.846153846154,
+          "median": 943.0,
+          "p95": 16484.25,
+          "total": 71106
+        },
+        "output_tokens": {
+          "mean": 38951.38461538462,
+          "median": 30277.5,
+          "p95": 104019.0,
+          "total": 1012736
+        },
+        "cache_create": {
+          "mean": 1821968.4615384615,
+          "median": 1608737.5,
+          "p95": 4197573.75,
+          "total": 47371180
+        },
+        "cache_read": {
+          "mean": 26855323.269230768,
+          "median": 24141513.5,
+          "p95": 61440682.25,
+          "total": 698238405
+        },
+        "total_cost": {
+          "mean": 15.481454019230767,
+          "median": 14.634379050000007,
+          "p95": 34.35435686249998,
+          "total": 402.51780449999995
+        },
+        "total_tokens": {
+          "mean": 28718977.96153846,
+          "median": 25977821.5,
+          "p95": 65496008.0,
+          "total": 746693427
+        },
+        "cost_input": {
+          "mean": 0.008204538461538461,
+          "median": 0.002829,
+          "p95": 0.049452750000000004,
+          "total": 0.213318
+        },
+        "cost_output": {
+          "mean": 0.5842707692307693,
+          "median": 0.4541625,
+          "p95": 1.5602850000000001,
+          "total": 15.191040000000001
+        },
+        "cost_cache_create": {
+          "mean": 6.832381730769231,
+          "median": 6.032765625,
+          "p95": 15.7409015625,
+          "total": 177.64192500000001
+        },
+        "cost_cache_read": {
+          "mean": 8.05659698076923,
+          "median": 7.242454049999999,
+          "p95": 18.432204674999998,
+          "total": 209.4715215
+        }
+      }
+    },
+    "sonnet-4-5": {
+      "days_used": 10,
+      "cache_efficiency": 89.29903233090909,
+      "pricing_per_million_tokens": {
+        "input": 3.0,
+        "output": 15.0,
+        "cache_create": 3.75,
+        "cache_read": 0.3
+      },
+      "statistics": {
+        "input_tokens": {
+          "mean": 10183.5,
+          "median": 10064.0,
+          "p95": 22411.799999999985,
+          "total": 101835
+        },
+        "output_tokens": {
+          "mean": 3405,
+          "median": 3050.0,
+          "p95": 7868.799999999996,
+          "total": 34050
+        },
+        "cache_create": {
+          "mean": 2320343.1,
+          "median": 2145119.5,
+          "p95": 4056837.799999999,
+          "total": 23203431
+        },
+        "cache_read": {
+          "mean": 19476540.8,
+          "median": 17409218.0,
+          "p95": 41471662.9,
+          "total": 194765408
+        },
+        "total_cost": {
+          "mean": 14.625874365,
+          "median": 12.612024149999996,
+          "p95": 27.680590380000005,
+          "total": 146.25874365
+        },
+        "total_tokens": {
+          "mean": 21810472.4,
+          "median": 19273762.0,
+          "p95": 45386523.0,
+          "total": 218104724
+        },
+        "cost_input": {
+          "mean": 0.0305505,
+          "median": 0.030192000000000004,
+          "p95": 0.06723539999999995,
+          "total": 0.305505
+        },
+        "cost_output": {
+          "mean": 0.051075,
+          "median": 0.04575,
+          "p95": 0.11803199999999994,
+          "total": 0.51075
+        },
+        "cost_cache_create": {
+          "mean": 8.701286625,
+          "median": 8.044198125,
+          "p95": 15.213141749999995,
+          "total": 87.01286625
+        },
+        "cost_cache_read": {
+          "mean": 5.84296224,
+          "median": 5.2227654,
+          "p95": 12.44149887,
+          "total": 58.4296224
+        }
+      }
+    }
+  }
+}
