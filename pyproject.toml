@@ -29,14 +29,14 @@ Repository = "https://github.com/yourusername/claude-code-usage-analyzer.git"
 Issues = "https://github.com/yourusername/claude-code-usage-analyzer/issues"
 
 [project.scripts]
-claude-usage-analyzer = "src.analyze_usage:main"
+claude-usage-analyzer = "claude_code_usage_analyzer.__main__:main"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[tool.uv]
-dev-dependencies = []
+[dependency-groups]
+dev = []
 
 [tool.hatchling.build.targets.wheel]
-packages = ["src"]
+packages = ["src/claude_code_usage_analyzer"]

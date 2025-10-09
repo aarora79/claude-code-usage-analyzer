@@ -28,6 +28,7 @@ Thumbs.db
 
 # Project specific
 /tmp/
+data/
 *.json
 *.md
 !examples/*.json

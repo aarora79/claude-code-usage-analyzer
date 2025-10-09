@@ -549,28 +549,70 @@ def main():
     """Main function to analyze usage and generate reports."""
     import sys
     import os
+    import argparse
+    from pathlib import Path
+
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(
+        description="Analyze Claude Code usage and generate cost reports",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # Analyze usage (fetches data automatically if needed)
+  claude-usage-analyzer
+
+  # Specify custom start date (YYYYMMDD format)
+  claude-usage-analyzer --since 20250901
+
+  # Force re-fetch of data
+  claude-usage-analyzer --refresh
+
+Output files:
+  data/raw/claude-usage-raw.json        - Raw usage data cache
+  data/output/claude-usage-analysis.json - Complete analysis (JSON)
+  data/output/claude-usage-report.md    - Human-readable report (Markdown)
+"""
+    )
+    parser.add_argument(
+        "--since",
+        type=str,
+        default="20250701",
+        help="Start date for usage data in YYYYMMDD format (default: 20250701)"
+    )
+    parser.add_argument(
+        "--refresh",
+        action="store_true",
+        help="Force re-fetch of raw usage data even if cache exists"
+    )
+
+    args = parser.parse_args()
 
     print("=" * 60)
     print("Claude Code Usage Analysis")
     print("=" * 60)
     print()
 
-    # Check if raw data file exists, if not fetch it
-    raw_data_file = '/tmp/claude-usage-raw.json'
+    # Create data directories if they don't exist
+    data_raw_dir = Path('data/raw')
+    data_output_dir = Path('data/output')
+    data_raw_dir.mkdir(parents=True, exist_ok=True)
+    data_output_dir.mkdir(parents=True, exist_ok=True)
 
-    if not os.path.exists(raw_data_file):
-        print(f"Raw data file not found at {raw_data_file}")
-        print("Fetching usage data from ccusage...")
+    # Check if raw data file exists, if not fetch it
+    raw_data_file = data_raw_dir / 'claude-usage-raw.json'
+
+    if not os.path.exists(raw_data_file) or args.refresh:
+        if args.refresh:
+            print("Refresh requested - re-fetching usage data...")
+        else:
+            print(f"Raw data file not found at {raw_data_file}")
+            print("Fetching usage data from ccusage...")
         print()
 
-        # Determine since date (default to 30 days ago or use command line arg)
-        since_date = "20250701"  # Default
-        if len(sys.argv) > 1:
-            since_date = sys.argv[1]
-            print(f"Using custom date: {since_date}")
+        since_date = args.since
 
         try:
-            fetch_raw_usage_data(since_date, raw_data_file)
+            fetch_raw_usage_data(since_date, str(raw_data_file))
         except Exception:
             print()
             print("Failed to fetch usage data automatically.")
@@ -599,7 +641,7 @@ def main():
     analysis_result = perform_complete_analysis(raw_data, pricing_map)
 
     # Save analysis JSON
-    json_file = '/tmp/claude-usage-analysis.json'
+    json_file = data_output_dir / 'claude-usage-analysis.json'
     print(f"Saving analysis JSON to: {json_file}")
     with open(json_file, 'w') as f:
         json.dump(analysis_result, f, indent=2)
@@ -608,7 +650,7 @@ def main():
     markdown_report = generate_markdown_from_json(analysis_result)
 
     # Save markdown report
-    md_file = '/tmp/claude-usage-report.md'
+    md_file = data_output_dir / 'claude-usage-report.md'
     print(f"Saving markdown report to: {md_file}")
     with open(md_file, 'w') as f:
         f.write(markdown_report)

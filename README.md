@@ -20,21 +20,47 @@ Comprehensive usage and cost analysis tool for Claude Code with detailed breakdo
 
 ## Installation
 
-### Using uv (Recommended)
+### Install uv (if not already installed)
+
+```bash
+# Install uv
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Add uv to your current shell session
+source $HOME/.local/bin/env
+
+# Or restart your shell
+exec $SHELL
+```
+
+### Clone and Run
 
 ```bash
 # Clone the repository
 git clone https://github.com/yourusername/claude-code-usage-analyzer.git
 cd claude-code-usage-analyzer
 
-# No installation needed! Just run with uv
-uv run src/analyze_usage.py
+# Sync dependencies and create virtual environment
+uv sync
+
+# Activate the virtual environment
+source .venv/bin/activate
+
+# Run the analyzer
+python -m claude_code_usage_analyzer
+
+# Or run directly with uv (without activating venv)
+uv run python -m claude_code_usage_analyzer
+
+# Or use the installed command
+claude-usage-analyzer
 ```
 
-### Alternative: Install with pip
+### Alternative: Run Directly Without Cloning
 
 ```bash
-pip install -e .
+# Download and run in one command
+uvx --from git+https://github.com/yourusername/claude-code-usage-analyzer claude-usage-analyzer
 ```
 
 ## Usage
@@ -45,20 +71,23 @@ The analyzer will automatically fetch your usage data if not already present:
 
 ```bash
 # Using uv (recommended) - fetches data automatically
-uv run src/analyze_usage.py
+uv run python -m claude_code_usage_analyzer
 
-# Or with custom date range (YYYYMMDD format)
-uv run src/analyze_usage.py 20250901
+# Or with custom start date (YYYYMMDD format)
+uv run python -m claude_code_usage_analyzer --since 20250901
 
-# Or if installed
-claude-usage-analyzer
+# Force refresh data even if cached
+uv run python -m claude_code_usage_analyzer --refresh
+
+# Or if installed (after uv sync and activating venv)
+claude-usage-analyzer --help
 ```
 
 The tool will:
-1. Check if `/tmp/claude-usage-raw.json` exists
+1. Check if `data/raw/claude-usage-raw.json` exists
 2. If not, automatically run `npx ccusage@latest` to fetch your data
 3. Perform analysis
-4. Generate JSON and markdown reports
+4. Generate JSON and markdown reports in `data/output/`
 
 ### Manual Workflow (Optional)
 
@@ -67,31 +96,34 @@ If you prefer to fetch data manually or the automatic fetch fails:
 #### Step 1: Generate Raw Usage Data
 
 ```bash
-npx ccusage@latest daily --since 20250701 --breakdown --json > /tmp/claude-usage-raw.json
+mkdir -p data/raw
+npx ccusage@latest daily --since 20250701 --breakdown --json > data/raw/claude-usage-raw.json
 ```
 
 #### Step 2: Run the Analyzer
 
 ```bash
-uv run src/analyze_usage.py
+uv run python -m claude_code_usage_analyzer
 ```
 
 ### Output Files
 
-The analyzer generates two files:
+The analyzer generates two files in the `data/output/` directory:
 
-1. **`/tmp/claude-usage-analysis.json`** - Complete analysis in JSON format
+1. **`data/output/claude-usage-analysis.json`** - Complete analysis in JSON format
    - All computed statistics
    - Model combinations
    - Daily and model-specific breakdowns
    - Pricing information
 
-2. **`/tmp/claude-usage-report.md`** - Human-readable markdown report
+2. **`data/output/claude-usage-report.md`** - Human-readable markdown report
    - Executive summary
    - Daily cost analysis
    - Token usage statistics
    - Cache efficiency metrics
    - Model-specific insights
+
+Raw usage data is cached in `data/raw/claude-usage-raw.json` for faster subsequent runs.
 
 ## Understanding the Output
 
@@ -199,27 +231,27 @@ Claude Sonnet 4/4.5:
 
 ### Custom Input/Output Paths
 
-Edit `src/analyze_usage.py` and modify these paths:
+By default, the tool uses:
+- **Raw data**: `data/raw/claude-usage-raw.json`
+- **JSON output**: `data/output/claude-usage-analysis.json`
+- **Markdown output**: `data/output/claude-usage-report.md`
 
-```python
-# Input file (raw ccusage data)
-raw_data_file = '/tmp/claude-usage-raw.json'
+These directories are created automatically if they don't exist.
 
-# Output files
-json_output = '/tmp/claude-usage-analysis.json'
-md_output = '/tmp/claude-usage-report.md'
-```
-
-### Date Range
-
-When generating raw data, adjust the `--since` parameter:
+### Command Line Options
 
 ```bash
-# Get all data from September 1, 2025
-npx ccusage@latest daily --since 20250901 --breakdown --json > /tmp/claude-usage-raw.json
+# Show help
+claude-usage-analyzer --help
 
-# Get data from specific date to another
-npx ccusage@latest daily --since 20250901 --until 20251001 --breakdown --json > /tmp/claude-usage-raw.json
+# Specify start date for usage data (YYYYMMDD format)
+claude-usage-analyzer --since 20250901
+
+# Force re-fetch of data (ignores cache)
+claude-usage-analyzer --refresh
+
+# Combine options
+claude-usage-analyzer --since 20250801 --refresh
 ```
 
 ## Sample Files
@@ -230,11 +262,12 @@ Check the `examples/` directory for:
 
 ## Troubleshooting
 
-### "No such file or directory: /tmp/claude-usage-raw.json"
+### "No such file or directory: data/raw/claude-usage-raw.json"
 
-You need to generate the raw usage data first:
+The tool should automatically fetch this data. If it fails, generate it manually:
 ```bash
-npx ccusage@latest daily --since 20250701 --breakdown --json > /tmp/claude-usage-raw.json
+mkdir -p data/raw
+npx ccusage@latest daily --since 20250701 --breakdown --json > data/raw/claude-usage-raw.json
 ```
 
 ### "Failed to fetch pricing from LiteLLM"
