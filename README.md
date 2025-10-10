@@ -17,7 +17,27 @@ Comprehensive usage and cost analysis tool for Claude Code with detailed breakdo
 - Python 3.9 or higher
 - [uv](https://docs.astral.sh/uv/) package manager
 - Claude Code with usage data
-- [ccusage](https://www.npmjs.com/package/ccusage) CLI tool (installed automatically via npx)
+- Node.js and npm (for npx to run [ccusage](https://www.npmjs.com/package/ccusage))
+
+### Install Node.js/npm (if not already installed)
+
+The tool uses `npx ccusage` to fetch Claude Code usage data. Install Node.js if you don't have it:
+
+```bash
+# On Ubuntu/Debian
+sudo apt update && sudo apt install nodejs npm
+
+# On macOS with Homebrew
+brew install node
+
+# Or download from https://nodejs.org/
+```
+
+Verify installation:
+```bash
+node --version
+npm --version
+```
 
 ## Installation
 
