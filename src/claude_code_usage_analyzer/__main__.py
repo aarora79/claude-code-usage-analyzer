@@ -336,11 +336,8 @@ def generate_markdown_from_json(analysis_json: Dict) -> str:
     mean_tokens_per_min = mean_total_tokens / MINUTES_PER_WORKDAY
     mean_cost_per_min = mean_cost / MINUTES_PER_WORKDAY
 
-    report.append(f"**Mean:** {fmt_num(mean_tokens_per_min, 0)} tokens/min ({fmt_cost(mean_cost_per_min)}/min) - "
-                 f"Input: {fmt_num(mean_input/MINUTES_PER_WORKDAY, 0)}, "
-                 f"Output: {fmt_num(mean_output/MINUTES_PER_WORKDAY, 0)}, "
-                 f"Cache Create: {fmt_num(mean_cache_create/MINUTES_PER_WORKDAY, 0)}, "
-                 f"Cache Read: {fmt_num(mean_cache_read/MINUTES_PER_WORKDAY, 0)}")
+    report.append(f"- **Mean Usage:** On an average day, you process {fmt_num(mean_tokens_per_min, 0)} tokens per minute at a cost of {fmt_cost(mean_cost_per_min)} per minute.")
+    report.append(f"  - This is composed of {fmt_num(mean_input/MINUTES_PER_WORKDAY, 0)} input tokens, {fmt_num(mean_output/MINUTES_PER_WORKDAY, 0)} output tokens, {fmt_num(mean_cache_create/MINUTES_PER_WORKDAY, 0)} cache creation tokens, and {fmt_num(mean_cache_read/MINUTES_PER_WORKDAY, 0)} cache read tokens per minute.")
 
     # Median daily usage
     median_total_tokens = daily_stats['total_tokens']['median']
@@ -352,11 +349,8 @@ def generate_markdown_from_json(analysis_json: Dict) -> str:
     median_tokens_per_min = median_total_tokens / MINUTES_PER_WORKDAY
     median_cost_per_min = median_cost / MINUTES_PER_WORKDAY
 
-    report.append(f"**Median:** {fmt_num(median_tokens_per_min, 0)} tokens/min ({fmt_cost(median_cost_per_min)}/min) - "
-                 f"Input: {fmt_num(median_input/MINUTES_PER_WORKDAY, 0)}, "
-                 f"Output: {fmt_num(median_output/MINUTES_PER_WORKDAY, 0)}, "
-                 f"Cache Create: {fmt_num(median_cache_create/MINUTES_PER_WORKDAY, 0)}, "
-                 f"Cache Read: {fmt_num(median_cache_read/MINUTES_PER_WORKDAY, 0)}")
+    report.append(f"- **Median Usage:** On a typical day, you process {fmt_num(median_tokens_per_min, 0)} tokens per minute at a cost of {fmt_cost(median_cost_per_min)} per minute.")
+    report.append(f"  - This is composed of {fmt_num(median_input/MINUTES_PER_WORKDAY, 0)} input tokens, {fmt_num(median_output/MINUTES_PER_WORKDAY, 0)} output tokens, {fmt_num(median_cache_create/MINUTES_PER_WORKDAY, 0)} cache creation tokens, and {fmt_num(median_cache_read/MINUTES_PER_WORKDAY, 0)} cache read tokens per minute.")
 
     # P95 daily usage
     p95_total_tokens = daily_stats['total_tokens']['p95']
@@ -368,11 +362,8 @@ def generate_markdown_from_json(analysis_json: Dict) -> str:
     p95_tokens_per_min = p95_total_tokens / MINUTES_PER_WORKDAY
     p95_cost_per_min = p95_cost / MINUTES_PER_WORKDAY
 
-    report.append(f"**P95:** {fmt_num(p95_tokens_per_min, 0)} tokens/min ({fmt_cost(p95_cost_per_min)}/min) - "
-                 f"Input: {fmt_num(p95_input/MINUTES_PER_WORKDAY, 0)}, "
-                 f"Output: {fmt_num(p95_output/MINUTES_PER_WORKDAY, 0)}, "
-                 f"Cache Create: {fmt_num(p95_cache_create/MINUTES_PER_WORKDAY, 0)}, "
-                 f"Cache Read: {fmt_num(p95_cache_read/MINUTES_PER_WORKDAY, 0)}")
+    report.append(f"- **P95 Usage:** On your busiest days (95th percentile), you process {fmt_num(p95_tokens_per_min, 0)} tokens per minute at a cost of {fmt_cost(p95_cost_per_min)} per minute.")
+    report.append(f"  - This is composed of {fmt_num(p95_input/MINUTES_PER_WORKDAY, 0)} input tokens, {fmt_num(p95_output/MINUTES_PER_WORKDAY, 0)} output tokens, {fmt_num(p95_cache_create/MINUTES_PER_WORKDAY, 0)} cache creation tokens, and {fmt_num(p95_cache_read/MINUTES_PER_WORKDAY, 0)} cache read tokens per minute.")
     report.append("")
 
     # Model Combinations

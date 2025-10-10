@@ -5,7 +5,7 @@
       "end_date": "2025-10-10",
       "total_days": 31
     },
-    "generated_at": "2025-10-10T00:40:40.248251",
+    "generated_at": "2025-10-10T00:43:34.893942",
     "source": "ccusage CLI tool",
     "pricing_source": "https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json"
   },
