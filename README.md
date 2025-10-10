@@ -278,8 +278,8 @@ claude-usage-analyzer --since 20250801 --refresh
 ## Sample Files
 
 Check the `examples/` directory for:
-- `sample-analysis.json` - Example JSON output
-- `sample-report.md` - Example markdown report
+- [sample-analysis.json](examples/sample-analysis.json) - Example JSON output
+- [sample-report.md](examples/sample-report.md) - Example markdown report
 
 ## Troubleshooting
 
