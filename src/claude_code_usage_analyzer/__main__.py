@@ -700,7 +700,6 @@ def generate_quarto_from_json(analysis_json: Dict) -> str:
     report.append(":::")
     report.append("")
 
-    # Continue with rest of the report (Model combinations, etc.)
     # Model Combinations
     report.append("## Model Usage Patterns")
     report.append("")
@@ -709,8 +708,10 @@ def generate_quarto_from_json(analysis_json: Dict) -> str:
         report.append(f"- **{models_str}**: {combo['days']} days")
     report.append("")
 
-    # Daily Cost Analysis (abbreviated - keeping tables but not duplicating all sections)
-    report.append("## Daily Cost Summary")
+    # Daily Cost Analysis
+    report.append("## Daily Cost Analysis")
+    report.append("")
+    report.append("### Total Daily Cost")
     report.append("")
     report.append("| Metric | Mean | Median | P95 | Min | Max |")
     report.append("|--------|------|--------|-----|-----|-----|")
@@ -719,9 +720,177 @@ def generate_quarto_from_json(analysis_json: Dict) -> str:
                  f"{fmt_cost(tc['p95'])} | {fmt_cost(tc['min'])} | {fmt_cost(tc['max'])} |")
     report.append("")
 
-    # Monthly projection callout
-    monthly_proj = daily_stats['total_cost']['mean'] * 30
+    # Cost breakdown by token type
+    report.append("### Daily Cost Breakdown by Token Type")
+    report.append("")
+    report.append("| Token Type | Mean | Median | P95 | Total | % of Total |")
+    report.append("|------------|------|--------|-----|-------|------------|")
+
+    total_cost = daily_stats['total_cost']['total']
+    for key, label in [
+        ('cost_input', 'Input Tokens'),
+        ('cost_output', 'Output Tokens'),
+        ('cost_cache_create', 'Cache Creation'),
+        ('cost_cache_read', 'Cache Read')
+    ]:
+        s = daily_stats[key]
+        pct = (s['total'] / total_cost * 100) if total_cost > 0 else 0
+        report.append(f"| **{label}** | {fmt_cost(s['mean'])} | {fmt_cost(s['median'])} | "
+                     f"{fmt_cost(s['p95'])} | {fmt_cost(s['total'])} | {fmt_num(pct)}% |")
+    report.append("")
+
+    # Daily Token Statistics
+    report.append("## Daily Token Usage Statistics")
+    report.append("")
+    report.append("| Token Type | Mean | Median | P95 | Min | Max |")
+    report.append("|------------|------|--------|-----|-----|-----|")
+
+    for key, label in [
+        ('input_tokens', 'Input Tokens'),
+        ('output_tokens', 'Output Tokens'),
+        ('cache_create', 'Cache Creation'),
+        ('cache_read', 'Cache Read'),
+        ('total_tokens', 'Total Tokens')
+    ]:
+        s = daily_stats[key]
+        report.append(f"| **{label}** | {fmt_num(s['mean'], 0)} | {fmt_num(s['median'], 0)} | "
+                     f"{fmt_num(s['p95'], 0)} | {fmt_num(s['min'], 0)} | {fmt_num(s['max'], 0)} |")
+    report.append("")
+
+    # Cache Efficiency
+    report.append("## Cache Efficiency Analysis")
+    report.append("")
     report.append("::: {.callout-note}")
+    report.append("**Cache efficiency** is calculated as: `(Cache Read Tokens / Total Tokens) × 100`")
+    report.append("")
+    report.append("Higher percentages indicate better cache utilization, meaning:")
+    report.append("")
+    report.append("- Fewer tokens need to be processed from scratch")
+    report.append("- Lower costs per request (cache reads cost ~10-20x less than new tokens)")
+    report.append("- Faster response times")
+    report.append(":::")
+    report.append("")
+    report.append("| Metric | Mean | Median | P95 | Min | Max |")
+    report.append("|--------|------|--------|-----|-----|-----|")
+    ce = daily_stats['cache_efficiency']
+    report.append(f"| **Cache Efficiency** | {fmt_num(ce['mean'])}% | {fmt_num(ce['median'])}% | "
+                 f"{fmt_num(ce['p95'])}% | {fmt_num(ce['min'])}% | {fmt_num(ce['max'])}% |")
+    report.append("")
+
+    # Model-specific analysis
+    report.append("## Model-Specific Analysis")
+    report.append("")
+
+    # Sort models by total cost
+    sorted_models = sorted(model_stats.items(),
+                          key=lambda x: x[1]['statistics']['total_cost']['total'],
+                          reverse=True)
+
+    for model_name, stats in sorted_models:
+        report.append(f"### {model_name}")
+        report.append("")
+        report.append(f"**Days Used:** {stats['days_used']} | **Cache Efficiency:** {fmt_num(stats['cache_efficiency'])}%")
+        report.append("")
+
+        # Pricing
+        if stats['pricing_per_million_tokens']:
+            pricing = stats['pricing_per_million_tokens']
+            report.append("::: {.callout-note icon=false collapse=true}")
+            report.append("#### Pricing (per million tokens)")
+            report.append(f"- Input: ${fmt_num(pricing['input'], 2)}")
+            report.append(f"- Output: ${fmt_num(pricing['output'], 2)}")
+            report.append(f"- Cache Creation: ${fmt_num(pricing['cache_create'], 2)}")
+            report.append(f"- Cache Read: ${fmt_num(pricing['cache_read'], 2)}")
+            report.append(":::")
+            report.append("")
+
+        # Cost breakdown
+        report.append("#### Cost Breakdown by Token Type")
+        report.append("")
+        report.append("| Cost Type | Mean | Median | P95 | Total | % of Model Cost |")
+        report.append("|-----------|------|--------|-----|-------|-----------------|")
+
+        model_total = stats['statistics']['total_cost']['total']
+        for key, label in [
+            ('cost_input', 'Input Tokens'),
+            ('cost_output', 'Output Tokens'),
+            ('cost_cache_create', 'Cache Creation'),
+            ('cost_cache_read', 'Cache Read')
+        ]:
+            if key in stats['statistics']:
+                s = stats['statistics'][key]
+                pct = (s['total'] / model_total * 100) if model_total > 0 else 0
+                report.append(f"| **{label}** | {fmt_cost(s['mean'])} | {fmt_cost(s['median'])} | "
+                             f"{fmt_cost(s['p95'])} | {fmt_cost(s['total'])} | {fmt_num(pct)}% |")
+
+        # Total row
+        tc_stat = stats['statistics']['total_cost']
+        report.append(f"| **TOTAL** | {fmt_cost(tc_stat['mean'])} | {fmt_cost(tc_stat['median'])} | "
+                     f"{fmt_cost(tc_stat['p95'])} | {fmt_cost(tc_stat['total'])} | 100.00% |")
+        report.append("")
+
+        # Token statistics
+        report.append("#### Token Statistics")
+        report.append("")
+        report.append("| Token Type | Mean | Median | P95 | Total |")
+        report.append("|------------|------|--------|-----|-------|")
+
+        for key, label in [
+            ('input_tokens', 'Input'),
+            ('output_tokens', 'Output'),
+            ('cache_create', 'Cache Create'),
+            ('cache_read', 'Cache Read'),
+            ('total_tokens', 'Total')
+        ]:
+            s = stats['statistics'][key]
+            report.append(f"| **{label}** | {fmt_num(s['mean'], 0)} | {fmt_num(s['median'], 0)} | "
+                         f"{fmt_num(s['p95'], 0)} | {fmt_num(s['total'], 0)} |")
+        report.append("")
+
+    # Key Insights
+    report.append("## Key Insights")
+    report.append("")
+
+    avg_cost = daily_stats['total_cost']['mean']
+    avg_input = daily_stats['cost_input']['mean']
+    avg_output = daily_stats['cost_output']['mean']
+    avg_cache_create = daily_stats['cost_cache_create']['mean']
+    avg_cache_read = daily_stats['cost_cache_read']['mean']
+
+    report.append("::: {.callout-tip}")
+    report.append(f"**Daily Cost Composition:** Your average daily cost of {fmt_cost(avg_cost)} breaks down as:")
+    report.append("")
+    report.append(f"- Input tokens: {fmt_cost(avg_input)} ({fmt_num(avg_input/avg_cost*100)}%)")
+    report.append(f"- Output tokens: {fmt_cost(avg_output)} ({fmt_num(avg_output/avg_cost*100)}%)")
+    report.append(f"- Cache creation: {fmt_cost(avg_cache_create)} ({fmt_num(avg_cache_create/avg_cost*100)}%)")
+    report.append(f"- Cache reads: {fmt_cost(avg_cache_read)} ({fmt_num(avg_cache_read/avg_cost*100)}%)")
+    report.append(":::")
+    report.append("")
+
+    p95_cost = daily_stats['total_cost']['p95']
+    report.append(f"**Cost Variability:** With a P95 of {fmt_cost(p95_cost)}, your highest usage days cost approximately {fmt_num(p95_cost / avg_cost, 1)}x the average.")
+    report.append("")
+
+    avg_efficiency = daily_stats['cache_efficiency']['mean']
+    if avg_efficiency > 90:
+        eff_desc = "excellent"
+    elif avg_efficiency > 80:
+        eff_desc = "very good"
+    elif avg_efficiency > 70:
+        eff_desc = "good"
+    else:
+        eff_desc = "moderate"
+
+    report.append(f"**Cache Utilization:** Your average cache efficiency of {fmt_num(avg_efficiency)}% is {eff_desc}, significantly reducing processing costs.")
+    report.append("")
+
+    primary_model = sorted_models[0]
+    model_cost = primary_model[1]['statistics']['total_cost']['total']
+    report.append(f"**Primary Model:** {primary_model[0]} accounts for {fmt_cost(model_cost)} ({fmt_num(model_cost / summary['total_cost'] * 100)}%) of total costs.")
+    report.append("")
+
+    monthly_proj = avg_cost * 30
+    report.append("::: {.callout-important}")
     report.append("### Monthly Projection")
     report.append(f"Based on average daily cost, projected monthly cost is approximately **{fmt_highlight_cost(monthly_proj)}**.")
     report.append(":::")
