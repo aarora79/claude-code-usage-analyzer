@@ -16,7 +16,8 @@ Comprehensive usage and cost analysis tool for Claude Code with detailed breakdo
 
 - Python 3.9 or higher
 - [uv](https://docs.astral.sh/uv/) package manager
-- Claude Code with usage data (requires `ccusage` CLI tool)
+- Claude Code with usage data
+- [ccusage](https://www.npmjs.com/package/ccusage) CLI tool (installed automatically via npx)
 
 ## Installation
 
@@ -85,7 +86,7 @@ claude-usage-analyzer --help
 
 The tool will:
 1. Check if `data/raw/claude-usage-raw.json` exists
-2. If not, automatically run `npx ccusage@latest` to fetch your data
+2. If not, automatically run `npx ccusage@latest` to fetch your data (uses [ccusage](https://www.npmjs.com/package/ccusage))
 3. Perform analysis
 4. Generate JSON and markdown reports in `data/output/`
 
