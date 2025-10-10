@@ -1,7 +1,7 @@
 # Claude Code Usage Analysis Report
 
 **Analysis Period:** 2025-09-10 to 2025-10-10 (31 days)
-**Report Generated:** 2025-10-10 00:43:34
+**Report Generated:** 2025-10-10 00:46:15
 
 ## Executive Summary
 
@@ -15,11 +15,11 @@
 
 ### Estimated Usage Per Minute (0-hour workday)
 
-- **Mean Usage:** On an average day, you process 7,536 tokens per minute at a cost of $0.01 per minute.
+- **Mean Usage:** On an average day, you process 7,536 tokens per minute at a cost of $0.01 per minute. This means your daily spend is $3.17 for 3,617,757 total tokens.
   - This is composed of 1 input tokens, 8 output tokens, 553 cache creation tokens, and 6,974 cache read tokens per minute.
-- **Median Usage:** On a typical day, you process 6,788 tokens per minute at a cost of $0.01 per minute.
+- **Median Usage:** On a typical day, you process 6,788 tokens per minute at a cost of $0.01 per minute. This means your daily spend is $2.95 for 3,258,259 total tokens.
   - This is composed of 0 input tokens, 5 output tokens, 562 cache creation tokens, and 6,364 cache read tokens per minute.
-- **P9 Usage:** On your busiest days (9th percentile), you process 15,138 tokens per minute at a cost of $0.01 per minute.
+- **P9 Usage:** On your busiest days (9th percentile), you process 15,138 tokens per minute at a cost of $0.01 per minute. This means your daily spend is $6.52 for 7,266,553 total tokens.
   - This is composed of 6 input tokens, 21 output tokens, 1,010 cache creation tokens, and 14,147 cache read tokens per minute.
 
 ## Model Usage Patterns
