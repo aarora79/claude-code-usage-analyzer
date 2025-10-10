@@ -13,7 +13,7 @@
 - **Cache Read Tokens:** 103,774,807
 - **Overall Cache Efficiency:** 9.25%
 
-### Estimated Usage Per Minute (0-hour workday)
+### Estimated Usage Per Minute (8-hour workday)
 
 - **Mean Usage:** On an average day, you process 7,536 tokens per minute at a cost of $0.01 per minute. This means your daily spend is $3.17 for 3,617,757 total tokens.
   - This is composed of 1 input tokens, 8 output tokens, 553 cache creation tokens, and 6,974 cache read tokens per minute.

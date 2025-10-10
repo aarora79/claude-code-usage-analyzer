@@ -557,6 +557,178 @@ def generate_markdown_from_json(analysis_json: Dict) -> str:
     return "\n".join(report)
 
 
+def generate_quarto_from_json(analysis_json: Dict) -> str:
+    """Generate Quarto document from analysis JSON with enhanced formatting."""
+    print("Generating Quarto document from analysis JSON...")
+
+    def fmt_num(num: float, decimals: int = 2) -> str:
+        """Format number with thousands separator."""
+        if decimals == 0:
+            return f"{int(num):,}"
+        return f"{num:,.{decimals}f}"
+
+    def fmt_cost(cost: float) -> str:
+        """Format cost in dollars."""
+        return f"${fmt_num(cost, 2)}"
+
+    def fmt_highlight_cost(cost: float) -> str:
+        """Format cost with highlight."""
+        return f"[**{fmt_cost(cost)}**]{{.text-success}}"
+
+    meta = analysis_json['metadata']
+    summary = analysis_json['summary']
+    daily_stats = analysis_json['daily_statistics']
+    model_stats = analysis_json['model_statistics']
+    model_combos = analysis_json['model_combinations']
+
+    report = []
+
+    # YAML Front Matter
+    report.append("---")
+    report.append("title: \"Claude Code Usage Analysis Report\"")
+    report.append("subtitle: \"Comprehensive cost and token analysis\"")
+    report.append(f"date: \"{datetime.fromisoformat(meta['generated_at']).strftime('%Y-%m-%d')}\"")
+    report.append("format:")
+    report.append("  html:")
+    report.append("    theme: [cosmo, custom.scss]")
+    report.append("    toc: true")
+    report.append("    toc-depth: 3")
+    report.append("    toc-location: left")
+    report.append("    code-fold: false")
+    report.append("    embed-resources: true")
+    report.append("    page-layout: full")
+    report.append("    grid:")
+    report.append("      body-width: 1200px")
+    report.append("    number-sections: false")
+    report.append("  pdf:")
+    report.append("    documentclass: article")
+    report.append("    toc: true")
+    report.append("    number-sections: false")
+    report.append("    colorlinks: true")
+    report.append("---")
+    report.append("")
+
+    # CSS for better styling
+    report.append("::: {.callout-note appearance=\"simple\"}")
+    report.append(f"**Analysis Period:** {meta['analysis_period']['start_date']} to {meta['analysis_period']['end_date']} ({meta['analysis_period']['total_days']} days)")
+    report.append(":::")
+    report.append("")
+
+    # Executive Summary with colored boxes
+    report.append("## Executive Summary {.unnumbered}")
+    report.append("")
+    report.append("::: {.callout-important icon=false}")
+    report.append("### Key Metrics")
+    report.append(f"- **Total Cost:** {fmt_highlight_cost(summary['total_cost'])}")
+    report.append(f"- **Total Tokens:** {fmt_num(summary['total_tokens'], 0)}")
+    report.append(f"- **Cache Efficiency:** **{fmt_num(summary['overall_cache_efficiency'])}%**")
+    report.append(":::")
+    report.append("")
+
+    # Token breakdown
+    report.append("::: {.grid}")
+    report.append("::: {.g-col-6}")
+    report.append("#### Input & Output")
+    report.append(f"- Input Tokens: `{fmt_num(summary['total_input_tokens'], 0)}`")
+    report.append(f"- Output Tokens: `{fmt_num(summary['total_output_tokens'], 0)}`")
+    report.append(":::")
+    report.append("::: {.g-col-6}")
+    report.append("#### Cache Tokens")
+    report.append(f"- Cache Creation: `{fmt_num(summary['total_cache_creation_tokens'], 0)}`")
+    report.append(f"- Cache Read: `{fmt_num(summary['total_cache_read_tokens'], 0)}`")
+    report.append(":::")
+    report.append(":::")
+    report.append("")
+
+    # Tokens per minute estimates
+    MINUTES_PER_WORKDAY = 8 * 60
+
+    report.append("### Estimated Usage Per Minute (8-hour workday) {.unnumbered}")
+    report.append("")
+
+    # Mean
+    mean_total_tokens = daily_stats['total_tokens']['mean']
+    mean_cost = daily_stats['total_cost']['mean']
+    mean_input = daily_stats['input_tokens']['mean']
+    mean_output = daily_stats['output_tokens']['mean']
+    mean_cache_create = daily_stats['cache_create']['mean']
+    mean_cache_read = daily_stats['cache_read']['mean']
+    mean_tokens_per_min = mean_total_tokens / MINUTES_PER_WORKDAY
+    mean_cost_per_min = mean_cost / MINUTES_PER_WORKDAY
+
+    report.append("::: {.callout-tip icon=false}")
+    report.append("#### Mean Usage")
+    report.append(f"On an average day, you process **{fmt_num(mean_tokens_per_min, 0)} tokens per minute** at a cost of **{fmt_cost(mean_cost_per_min)} per minute**. This means your **daily spend is {fmt_highlight_cost(mean_cost)}** for **{fmt_num(mean_total_tokens, 0)} total tokens**.")
+    report.append("")
+    report.append(f"- **Breakdown per minute:** {fmt_num(mean_input/MINUTES_PER_WORKDAY, 0)} input, {fmt_num(mean_output/MINUTES_PER_WORKDAY, 0)} output, {fmt_num(mean_cache_create/MINUTES_PER_WORKDAY, 0)} cache create, {fmt_num(mean_cache_read/MINUTES_PER_WORKDAY, 0)} cache read")
+    report.append(":::")
+    report.append("")
+
+    # Median
+    median_total_tokens = daily_stats['total_tokens']['median']
+    median_cost = daily_stats['total_cost']['median']
+    median_input = daily_stats['input_tokens']['median']
+    median_output = daily_stats['output_tokens']['median']
+    median_cache_create = daily_stats['cache_create']['median']
+    median_cache_read = daily_stats['cache_read']['median']
+    median_tokens_per_min = median_total_tokens / MINUTES_PER_WORKDAY
+    median_cost_per_min = median_cost / MINUTES_PER_WORKDAY
+
+    report.append("::: {.callout-tip icon=false}")
+    report.append("#### Median Usage")
+    report.append(f"On a typical day, you process **{fmt_num(median_tokens_per_min, 0)} tokens per minute** at a cost of **{fmt_cost(median_cost_per_min)} per minute**. This means your **daily spend is {fmt_highlight_cost(median_cost)}** for **{fmt_num(median_total_tokens, 0)} total tokens**.")
+    report.append("")
+    report.append(f"- **Breakdown per minute:** {fmt_num(median_input/MINUTES_PER_WORKDAY, 0)} input, {fmt_num(median_output/MINUTES_PER_WORKDAY, 0)} output, {fmt_num(median_cache_create/MINUTES_PER_WORKDAY, 0)} cache create, {fmt_num(median_cache_read/MINUTES_PER_WORKDAY, 0)} cache read")
+    report.append(":::")
+    report.append("")
+
+    # P95
+    p95_total_tokens = daily_stats['total_tokens']['p95']
+    p95_cost = daily_stats['total_cost']['p95']
+    p95_input = daily_stats['input_tokens']['p95']
+    p95_output = daily_stats['output_tokens']['p95']
+    p95_cache_create = daily_stats['cache_create']['p95']
+    p95_cache_read = daily_stats['cache_read']['p95']
+    p95_tokens_per_min = p95_total_tokens / MINUTES_PER_WORKDAY
+    p95_cost_per_min = p95_cost / MINUTES_PER_WORKDAY
+
+    report.append("::: {.callout-warning icon=false}")
+    report.append("#### P95 Usage (Busiest Days)")
+    report.append(f"On your busiest days (95th percentile), you process **{fmt_num(p95_tokens_per_min, 0)} tokens per minute** at a cost of **{fmt_cost(p95_cost_per_min)} per minute**. This means your **daily spend is {fmt_highlight_cost(p95_cost)}** for **{fmt_num(p95_total_tokens, 0)} total tokens**.")
+    report.append("")
+    report.append(f"- **Breakdown per minute:** {fmt_num(p95_input/MINUTES_PER_WORKDAY, 0)} input, {fmt_num(p95_output/MINUTES_PER_WORKDAY, 0)} output, {fmt_num(p95_cache_create/MINUTES_PER_WORKDAY, 0)} cache create, {fmt_num(p95_cache_read/MINUTES_PER_WORKDAY, 0)} cache read")
+    report.append(":::")
+    report.append("")
+
+    # Continue with rest of the report (Model combinations, etc.)
+    # Model Combinations
+    report.append("## Model Usage Patterns")
+    report.append("")
+    for combo in model_combos:
+        models_str = " + ".join(combo['models'])
+        report.append(f"- **{models_str}**: {combo['days']} days")
+    report.append("")
+
+    # Daily Cost Analysis (abbreviated - keeping tables but not duplicating all sections)
+    report.append("## Daily Cost Summary")
+    report.append("")
+    report.append("| Metric | Mean | Median | P95 | Min | Max |")
+    report.append("|--------|------|--------|-----|-----|-----|")
+    tc = daily_stats['total_cost']
+    report.append(f"| **Total Cost** | {fmt_cost(tc['mean'])} | {fmt_cost(tc['median'])} | "
+                 f"{fmt_cost(tc['p95'])} | {fmt_cost(tc['min'])} | {fmt_cost(tc['max'])} |")
+    report.append("")
+
+    # Monthly projection callout
+    monthly_proj = daily_stats['total_cost']['mean'] * 30
+    report.append("::: {.callout-note}")
+    report.append("### Monthly Projection")
+    report.append(f"Based on average daily cost, projected monthly cost is approximately **{fmt_highlight_cost(monthly_proj)}**.")
+    report.append(":::")
+
+    return "\n".join(report)
+
+
 def fetch_raw_usage_data(since_date: str = "20250701", output_file: str = "/tmp/claude-usage-raw.json") -> str:
     """Fetch raw usage data using ccusage CLI tool."""
     import subprocess
@@ -701,16 +873,28 @@ Output files:
     with open(md_file, 'w') as f:
         f.write(markdown_report)
 
+    # Generate and save Quarto report
+    quarto_report = generate_quarto_from_json(analysis_result)
+    qmd_file = data_output_dir / 'claude-usage-report.qmd'
+    print(f"Saving Quarto report to: {qmd_file}")
+    with open(qmd_file, 'w') as f:
+        f.write(quarto_report)
+
     print()
     print("=" * 60)
     print("Analysis Complete!")
     print("=" * 60)
     print(f"JSON Analysis: {json_file}")
     print(f"Markdown Report: {md_file}")
+    print(f"Quarto Report: {qmd_file}")
     print()
     print(f"Total Cost: ${analysis_result['summary']['total_cost']:.2f}")
     print(f"Total Tokens: {analysis_result['summary']['total_tokens']:,}")
     print(f"Cache Efficiency: {analysis_result['summary']['overall_cache_efficiency']:.2f}%")
+    print()
+    print("To generate HTML/PDF from Quarto:")
+    print(f"  quarto render {qmd_file} --to html")
+    print(f"  quarto render {qmd_file} --to pdf")
 
 
 if __name__ == '__main__':
