@@ -334,6 +334,15 @@ Contributions are welcome! Please:
 
 MIT License - see LICENSE file for details
 
+## Data Sources
+
+This tool analyzes Claude Code usage data from two sources:
+
+1. **ccusage CLI tool**: The [ccusage](https://www.npmjs.com/package/ccusage) npm package aggregates and formats usage data
+2. **Raw conversation data**: Token usage is stored in `${HOME}/.claude/projects/<project-name>/<conversation-id>.jsonl` files
+
+The tool uses the ccusage CLI for convenient access to aggregated data, but you can also directly access the raw `.jsonl` files if needed for custom analysis.
+
 ## Acknowledgments
 
 - Built for [Claude Code](https://docs.claude.com/en/docs/claude-code) users
