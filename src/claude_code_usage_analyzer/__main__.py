@@ -320,6 +320,61 @@ def generate_markdown_from_json(analysis_json: Dict) -> str:
     report.append(f"- **Overall Cache Efficiency:** {fmt_num(summary['overall_cache_efficiency'])}%")
     report.append("")
 
+    # Tokens per minute estimates (assuming 8-hour workday = 480 minutes)
+    MINUTES_PER_WORKDAY = 8 * 60  # 480 minutes
+
+    report.append("### Estimated Usage Per Minute (8-hour workday)")
+    report.append("")
+
+    # Mean daily usage
+    mean_total_tokens = daily_stats['total_tokens']['mean']
+    mean_cost = daily_stats['total_cost']['mean']
+    mean_input = daily_stats['input_tokens']['mean']
+    mean_output = daily_stats['output_tokens']['mean']
+    mean_cache_create = daily_stats['cache_create']['mean']
+    mean_cache_read = daily_stats['cache_read']['mean']
+    mean_tokens_per_min = mean_total_tokens / MINUTES_PER_WORKDAY
+    mean_cost_per_min = mean_cost / MINUTES_PER_WORKDAY
+
+    report.append(f"**Mean:** {fmt_num(mean_tokens_per_min, 0)} tokens/min ({fmt_cost(mean_cost_per_min)}/min) - "
+                 f"Input: {fmt_num(mean_input/MINUTES_PER_WORKDAY, 0)}, "
+                 f"Output: {fmt_num(mean_output/MINUTES_PER_WORKDAY, 0)}, "
+                 f"Cache Create: {fmt_num(mean_cache_create/MINUTES_PER_WORKDAY, 0)}, "
+                 f"Cache Read: {fmt_num(mean_cache_read/MINUTES_PER_WORKDAY, 0)}")
+
+    # Median daily usage
+    median_total_tokens = daily_stats['total_tokens']['median']
+    median_cost = daily_stats['total_cost']['median']
+    median_input = daily_stats['input_tokens']['median']
+    median_output = daily_stats['output_tokens']['median']
+    median_cache_create = daily_stats['cache_create']['median']
+    median_cache_read = daily_stats['cache_read']['median']
+    median_tokens_per_min = median_total_tokens / MINUTES_PER_WORKDAY
+    median_cost_per_min = median_cost / MINUTES_PER_WORKDAY
+
+    report.append(f"**Median:** {fmt_num(median_tokens_per_min, 0)} tokens/min ({fmt_cost(median_cost_per_min)}/min) - "
+                 f"Input: {fmt_num(median_input/MINUTES_PER_WORKDAY, 0)}, "
+                 f"Output: {fmt_num(median_output/MINUTES_PER_WORKDAY, 0)}, "
+                 f"Cache Create: {fmt_num(median_cache_create/MINUTES_PER_WORKDAY, 0)}, "
+                 f"Cache Read: {fmt_num(median_cache_read/MINUTES_PER_WORKDAY, 0)}")
+
+    # P95 daily usage
+    p95_total_tokens = daily_stats['total_tokens']['p95']
+    p95_cost = daily_stats['total_cost']['p95']
+    p95_input = daily_stats['input_tokens']['p95']
+    p95_output = daily_stats['output_tokens']['p95']
+    p95_cache_create = daily_stats['cache_create']['p95']
+    p95_cache_read = daily_stats['cache_read']['p95']
+    p95_tokens_per_min = p95_total_tokens / MINUTES_PER_WORKDAY
+    p95_cost_per_min = p95_cost / MINUTES_PER_WORKDAY
+
+    report.append(f"**P95:** {fmt_num(p95_tokens_per_min, 0)} tokens/min ({fmt_cost(p95_cost_per_min)}/min) - "
+                 f"Input: {fmt_num(p95_input/MINUTES_PER_WORKDAY, 0)}, "
+                 f"Output: {fmt_num(p95_output/MINUTES_PER_WORKDAY, 0)}, "
+                 f"Cache Create: {fmt_num(p95_cache_create/MINUTES_PER_WORKDAY, 0)}, "
+                 f"Cache Read: {fmt_num(p95_cache_read/MINUTES_PER_WORKDAY, 0)}")
+    report.append("")
+
     # Model Combinations
     report.append("## Model Usage Patterns")
     report.append("")

@@ -1,25 +1,31 @@
 # Claude Code Usage Analysis Report
 
-**Analysis Period:** 2025-09-09 to 2025-10-09 (31 days)
-**Report Generated:** 2025-10-09 21:08:50
+**Analysis Period:** 2025-09-10 to 2025-10-10 (31 days)
+**Report Generated:** 2025-10-10 00:40:40
 
 ## Executive Summary
 
-- **Total Cost:** $98.99
-- **Total Tokens:** 112,630,415
-- **Total Input Tokens:** 17,830
-- **Total Output Tokens:** 124,302
-- **Cache Creation Tokens:** 8,126,286
-- **Cache Read Tokens:** 104,361,996
-- **Overall Cache Efficiency:** 9.27%
+- **Total Cost:** $98.26
+- **Total Tokens:** 112,150,494
+- **Total Input Tokens:** 17,884
+- **Total Output Tokens:** 122,907
+- **Cache Creation Tokens:** 8,234,895
+- **Cache Read Tokens:** 103,774,807
+- **Overall Cache Efficiency:** 9.25%
+
+### Estimated Usage Per Minute (0-hour workday)
+
+**Mean:** 7,536 tokens/min ($0.01/min) - Input: 1, Output: 8, Cache Create: 553, Cache Read: 6,974
+**Median:** 6,788 tokens/min ($0.01/min) - Input: 0, Output: 5, Cache Create: 562, Cache Read: 6,364
+**P9:** 15,138 tokens/min ($0.01/min) - Input: 6, Output: 21, Cache Create: 1,010, Cache Read: 14,147
 
 ## Model Usage Patterns
 
 **Model Combinations Used:**
 
-- **opus-4-1 + sonnet-4**: 20 days
+- **opus-4-1 + sonnet-4**: 19 days
+- **sonnet-4-5**: 6 days
 - **sonnet-4 + sonnet-4-5**: 5 days
-- **sonnet-4-5**: 5 days
 - **sonnet-4**: 1 days
 
 ## Daily Cost Analysis
@@ -28,26 +34,26 @@
 
 | Metric | Mean | Median | P9 | Min | Max |
 |--------|------|--------|-----|-----|-----|
-| **Total Cost** | $3.19 | $2.95 | $6.52 | $0.11 | $7.53 |
+| **Total Cost** | $3.17 | $2.95 | $6.52 | $0.11 | $7.53 |
 
 ### Daily Cost Breakdown by Token Type
 
 | Token Type | Mean | Median | P9 | Total | % of Total |
 |------------|------|--------|-----|-------|------------|
 | **Input Tokens** | $0.00 | $0.00 | $0.01 | $0.06 | 0.01% |
-| **Output Tokens** | $0.10 | $0.08 | $0.25 | $3.04 | 0.31% |
-| **Cache Creation** | $1.50 | $1.32 | $2.64 | $46.51 | 4.70% |
-| **Cache Read** | $1.59 | $1.22 | $3.61 | $49.38 | 4.99% |
+| **Output Tokens** | $0.10 | $0.08 | $0.25 | $2.98 | 0.30% |
+| **Cache Creation** | $1.50 | $1.35 | $2.64 | $46.39 | 4.72% |
+| **Cache Read** | $1.57 | $1.22 | $3.61 | $48.84 | 4.97% |
 
 ## Daily Token Usage Statistics
 
 | Token Type | Mean | Median | P9 | Min | Max |
 |------------|------|--------|-----|-----|-----|
-| **Input Tokens** | 575 | 138 | 3,031 | 15 | 3,210 |
-| **Output Tokens** | 4,009 | 2,411 | 10,138 | 67 | 15,549 |
-| **Cache Creation** | 262,138 | 252,517 | 485,035 | 6,533 | 488,901 |
-| **Cache Read** | 3,366,516 | 3,054,974 | 6,790,986 | 13,910 | 9,962,503 |
-| **Total Tokens** | 3,633,239 | 3,258,259 | 7,266,553 | 20,589 | 10,382,981 |
+| **Input Tokens** | 576 | 138 | 3,031 | 12 | 3,210 |
+| **Output Tokens** | 3,964 | 2,411 | 10,138 | 25 | 15,549 |
+| **Cache Creation** | 265,641 | 269,994 | 485,035 | 6,533 | 488,901 |
+| **Cache Read** | 3,347,574 | 3,054,974 | 6,790,986 | 13,910 | 9,962,503 |
+| **Total Tokens** | 3,617,757 | 3,258,259 | 7,266,553 | 20,589 | 10,382,981 |
 
 ## Cache Efficiency Analysis
 
@@ -60,13 +66,13 @@ Higher percentages indicate better cache utilization, meaning:
 
 | Metric | Mean | Median | P9 | Min | Max |
 |--------|------|--------|-----|-----|-----|
-| **Cache Efficiency** | 9.02% | 9.21% | 9.56% | 6.07% | 9.60% |
+| **Cache Efficiency** | 9.01% | 9.14% | 9.56% | 6.76% | 9.60% |
 
 ## Model-Specific Analysis
 
 ### opus-0-0
 
-**Days Used:** 2
+**Days Used:** 1
 **Cache Efficiency:** 9.33%
 
 **Pricing (per million tokens):**
@@ -80,20 +86,20 @@ Higher percentages indicate better cache utilization, meaning:
 | Cost Type | Mean | Median | P9 | Total | % of Model Cost |
 |-----------|------|--------|-----|-------|-----------------|
 | **Input Tokens** | $0.00 | $0.00 | $0.00 | $0.01 | 0.00% |
-| **Output Tokens** | $0.07 | $0.07 | $0.14 | $1.47 | 0.33% |
-| **Cache Creation** | $1.00 | $0.92 | $1.79 | $20.04 | 4.54% |
-| **Cache Read** | $1.13 | $1.21 | $2.15 | $22.59 | 5.12% |
-| **TOTAL** | $2.21 | $2.40 | $3.79 | $44.11 | 10.00% |
+| **Output Tokens** | $0.07 | $0.07 | $0.14 | $1.42 | 0.33% |
+| **Cache Creation** | $1.02 | $0.94 | $1.86 | $19.38 | 4.51% |
+| **Cache Read** | $1.17 | $1.25 | $2.18 | $22.13 | 5.15% |
+| **TOTAL** | $2.26 | $2.51 | $3.82 | $42.94 | 10.00% |
 
 #### Token Statistics
 
 | Token Type | Mean | Median | P9 | Total |
 |------------|------|--------|-----|-------|
-| **Input** | 26 | 26 | 46 | 536 |
-| **Output** | 981 | 963 | 1,864 | 19,624 |
-| **Cache Create** | 53,441 | 49,229 | 95,754 | 1,068,824 |
-| **Cache Read** | 753,080 | 805,884 | 1,431,572 | 15,061,615 |
-| **Total** | 807,530 | 862,533 | 1,494,148 | 16,150,600 |
+| **Input** | 27 | 26 | 47 | 521 |
+| **Output** | 993 | 970 | 1,891 | 18,882 |
+| **Cache Create** | 54,409 | 50,196 | 99,257 | 1,033,780 |
+| **Cache Read** | 776,641 | 834,652 | 1,454,563 | 14,756,187 |
+| **Total** | 832,072 | 898,951 | 1,516,137 | 15,809,371 |
 
 ### sonnet-0
 
@@ -111,25 +117,25 @@ Higher percentages indicate better cache utilization, meaning:
 | Cost Type | Mean | Median | P9 | Total | % of Model Cost |
 |-----------|------|--------|-----|-------|-----------------|
 | **Input Tokens** | $0.00 | $0.00 | $0.01 | $0.02 | 0.01% |
-| **Output Tokens** | $0.06 | $0.04 | $0.16 | $1.52 | 0.38% |
-| **Cache Creation** | $0.68 | $0.60 | $1.57 | $17.76 | 4.41% |
-| **Cache Read** | $0.81 | $0.72 | $1.84 | $20.95 | 5.20% |
-| **TOTAL** | $1.55 | $1.46 | $3.44 | $40.25 | 10.00% |
+| **Output Tokens** | $0.06 | $0.05 | $0.16 | $1.51 | 0.38% |
+| **Cache Creation** | $0.70 | $0.65 | $1.58 | $17.50 | 4.43% |
+| **Cache Read** | $0.82 | $0.77 | $1.86 | $20.52 | 5.19% |
+| **TOTAL** | $1.58 | $1.60 | $3.45 | $39.55 | 10.00% |
 
 #### Token Statistics
 
 | Token Type | Mean | Median | P9 | Total |
 |------------|------|--------|-----|-------|
-| **Input** | 273 | 94 | 1,648 | 7,110 |
-| **Output** | 3,895 | 3,027 | 10,401 | 101,273 |
-| **Cache Create** | 182,196 | 160,873 | 419,757 | 4,737,118 |
-| **Cache Read** | 2,685,532 | 2,414,151 | 6,144,068 | 69,823,840 |
-| **Total** | 2,871,897 | 2,597,782 | 6,549,600 | 74,669,342 |
+| **Input** | 282 | 94 | 1,730 | 7,060 |
+| **Output** | 4,012 | 3,089 | 10,523 | 100,303 |
+| **Cache Create** | 186,675 | 173,469 | 422,052 | 4,666,875 |
+| **Cache Read** | 2,735,800 | 2,550,444 | 6,215,837 | 68,395,002 |
+| **Total** | 2,926,769 | 2,763,419 | 6,619,184 | 73,169,241 |
 
 ### sonnet-0-0
 
 **Days Used:** 1
-**Cache Efficiency:** 8.93%
+**Cache Efficiency:** 8.90%
 
 **Pricing (per million tokens):**
 - Input: $0.30
@@ -142,33 +148,33 @@ Higher percentages indicate better cache utilization, meaning:
 | Cost Type | Mean | Median | P9 | Total | % of Model Cost |
 |-----------|------|--------|-----|-------|-----------------|
 | **Input Tokens** | $0.00 | $0.00 | $0.01 | $0.03 | 0.02% |
-| **Output Tokens** | $0.01 | $0.01 | $0.01 | $0.05 | 0.03% |
-| **Cache Creation** | $0.87 | $0.80 | $1.52 | $8.70 | 5.95% |
-| **Cache Read** | $0.58 | $0.52 | $1.24 | $5.84 | 4.00% |
-| **TOTAL** | $1.46 | $1.26 | $2.77 | $14.63 | 10.00% |
+| **Output Tokens** | $0.01 | $0.01 | $0.01 | $0.06 | 0.03% |
+| **Cache Creation** | $0.86 | $0.81 | $1.61 | $9.50 | 6.02% |
+| **Cache Read** | $0.56 | $0.51 | $1.24 | $6.19 | 3.92% |
+| **TOTAL** | $1.43 | $1.35 | $2.74 | $15.78 | 10.00% |
 
 #### Token Statistics
 
 | Token Type | Mean | Median | P9 | Total |
 |------------|------|--------|-----|-------|
-| **Input** | 1,018 | 1,006 | 2,241 | 10,183 |
-| **Output** | 340 | 305 | 786 | 3,405 |
-| **Cache Create** | 232,034 | 214,511 | 405,683 | 2,320,343 |
-| **Cache Read** | 1,947,654 | 1,740,921 | 4,147,166 | 19,476,540 |
-| **Total** | 2,181,047 | 1,927,376 | 4,538,652 | 21,810,472 |
+| **Input** | 936 | 918 | 2,215 | 10,302 |
+| **Output** | 338 | 358 | 768 | 3,721 |
+| **Cache Create** | 230,385 | 216,728 | 428,519 | 2,534,239 |
+| **Cache Read** | 1,874,874 | 1,705,397 | 4,135,899 | 20,623,617 |
+| **Total** | 2,106,534 | 1,860,544 | 4,535,082 | 23,171,881 |
 
 ## Key Insights
 
-0. **Daily Cost Composition:** Your average daily cost of $3.19 breaks down as:
+0. **Daily Cost Composition:** Your average daily cost of $3.17 breaks down as:
    - Input tokens: $0.00 (0.01%)
-   - Output tokens: $0.10 (0.31%)
-   - Cache creation: $1.50 (4.70%)
-   - Cache reads: $1.59 (4.99%)
+   - Output tokens: $0.10 (0.30%)
+   - Cache creation: $1.50 (4.72%)
+   - Cache reads: $1.57 (4.97%)
 
-0. **Cost Variability:** With a P9 of $6.52, your highest usage days cost approximately 0.20x the average.
+0. **Cost Variability:** With a P9 of $6.52, your highest usage days cost approximately 0.21x the average.
 
-0. **Cache Utilization:** Your average cache efficiency of 9.02% is excellent, significantly reducing processing costs.
+0. **Cache Utilization:** Your average cache efficiency of 9.01% is excellent, significantly reducing processing costs.
 
-0. **Primary Model:** opus-0-0 accounts for $44.11 (4.46%) of total costs.
+0. **Primary Model:** opus-0-0 accounts for $42.94 (4.37%) of total costs.
 
-0. **Monthly Projection:** Based on average daily cost, projected monthly cost is approximately $95.80.
+0. **Monthly Projection:** Based on average daily cost, projected monthly cost is approximately $95.09.
