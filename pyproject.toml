@@ -36,7 +36,10 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [dependency-groups]
-dev = []
+dev = [
+    "matplotlib>=3.5.0",
+    "numpy>=1.21.0"
+]
 
 [tool.hatchling.build.targets.wheel]
 packages = ["src/claude_code_usage_analyzer"]

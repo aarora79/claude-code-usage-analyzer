@@ -12,8 +12,14 @@ import json
 import statistics
 import urllib.request
 from datetime import datetime
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 from collections import Counter
+try:
+    import matplotlib.pyplot as plt
+    import numpy as np
+    MATPLOTLIB_AVAILABLE = True
+except ImportError:
+    MATPLOTLIB_AVAILABLE = False
 
 
 LITELLM_PRICING_URL = "https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json"
@@ -93,6 +99,196 @@ def analyze_model_combinations(daily_data: List[Dict]) -> List[Dict[str, Any]]:
         })
 
     return result
+
+
+def _calculate_request_statistics(daily_data: List[Dict]) -> Dict[str, Any]:
+    """Calculate per-request statistics from daily aggregates."""
+    request_stats = {
+        'input_tokens': [],
+        'output_tokens': [],
+        'cache_write_tokens': [],
+        'cache_read_tokens': [],
+        'total_tokens': []
+    }
+
+    for day in daily_data:
+        for breakdown in day.get('modelBreakdowns', []):
+            request_stats['input_tokens'].append(breakdown.get('inputTokens', 0))
+            request_stats['output_tokens'].append(breakdown.get('outputTokens', 0))
+            request_stats['cache_write_tokens'].append(
+                breakdown.get('cacheCreationTokens', 0)
+            )
+            request_stats['cache_read_tokens'].append(
+                breakdown.get('cacheReadTokens', 0)
+            )
+
+            total = (
+                breakdown.get('inputTokens', 0) +
+                breakdown.get('outputTokens', 0) +
+                breakdown.get('cacheCreationTokens', 0) +
+                breakdown.get('cacheReadTokens', 0)
+            )
+            request_stats['total_tokens'].append(total)
+
+    result = {}
+    for key, values in request_stats.items():
+        if values:
+            result[key] = {
+                'mean': statistics.mean(values),
+                'median': statistics.median(values),
+                'p75': calculate_percentile(values, 75),
+                'p95': calculate_percentile(values, 95),
+                'p99': calculate_percentile(values, 99),
+                'min': min(values),
+                'max': max(values),
+                'total': sum(values),
+                'count': len(values)
+            }
+
+    return result
+
+
+def _generate_token_distribution_charts(
+    analysis_json: Dict,
+    output_dir: str = 'data/output'
+) -> Optional[str]:
+    """Generate visualization charts for token distributions."""
+    if not MATPLOTLIB_AVAILABLE:
+        return None
+
+    try:
+        import os
+        from pathlib import Path
+
+        daily_stats = analysis_json['daily_statistics']
+        request_stats = analysis_json.get('request_statistics', {})
+
+        if not request_stats:
+            return None
+
+        Path(output_dir).mkdir(parents=True, exist_ok=True)
+
+        fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+        fig.suptitle('Token Usage Distribution Analysis', fontsize=16, fontweight='bold')
+
+        token_types = [
+            ('input_tokens', 'Input Tokens'),
+            ('output_tokens', 'Output Tokens'),
+            ('cache_write_tokens', 'Cache Write Tokens'),
+            ('cache_read_tokens', 'Cache Read Tokens')
+        ]
+
+        for idx, (key, label) in enumerate(token_types):
+            ax = axes[idx // 2, idx % 2]
+
+            if key in request_stats:
+                stats = request_stats[key]
+                data = [
+                    stats.get('min', 0),
+                    stats.get('p95', 0),
+                    stats.get('max', 0)
+                ]
+                names = ['Min', 'P95', 'Max']
+
+                colors = ['#3498db', '#e74c3c', '#2ecc71']
+                bars = ax.bar(names, data, color=colors, alpha=0.7, edgecolor='black')
+
+                ax.set_ylabel('Token Count', fontweight='bold')
+                ax.set_title(label, fontweight='bold')
+                ax.yaxis.set_major_formatter(
+                    plt.FuncFormatter(lambda x, p: f'{int(x):,}')
+                )
+
+                for bar in bars:
+                    height = bar.get_height()
+                    ax.text(
+                        bar.get_x() + bar.get_width()/2., height,
+                        f'{int(height):,}',
+                        ha='center', va='bottom', fontweight='bold', fontsize=9
+                    )
+
+        plt.tight_layout()
+        chart_path = os.path.join(output_dir, 'token-distribution.png')
+        plt.savefig(chart_path, dpi=100, bbox_inches='tight')
+        plt.close()
+
+        return chart_path
+
+    except Exception as e:
+        print(f"Warning: Could not generate charts: {e}")
+        return None
+
+
+def _generate_request_histogram(
+    analysis_json: Dict,
+    output_dir: str = 'data/output'
+) -> Optional[str]:
+    """Generate histograms showing token metrics distribution."""
+    if not MATPLOTLIB_AVAILABLE:
+        return None
+
+    try:
+        import os
+        from pathlib import Path
+
+        request_stats = analysis_json.get('request_statistics', {})
+
+        if not request_stats:
+            return None
+
+        Path(output_dir).mkdir(parents=True, exist_ok=True)
+
+        fig, axes = plt.subplots(2, 3, figsize=(16, 10))
+        fig.suptitle('Token Metrics: Mean, Median, P75, P95, Max', fontsize=16, fontweight='bold')
+
+        token_types = [
+            ('input_tokens', 'Input Tokens'),
+            ('output_tokens', 'Output Tokens'),
+            ('cache_write_tokens', 'Cache Write Tokens'),
+            ('cache_read_tokens', 'Cache Read Tokens'),
+            ('total_tokens', 'Total Tokens')
+        ]
+
+        metrics = ['mean', 'median', 'p75', 'p95', 'max']
+        colors = ['#3498db', '#2ecc71', '#f39c12', '#e74c3c', '#9b59b6']
+
+        for idx, (key, label) in enumerate(token_types):
+            ax = axes[idx // 3, idx % 3]
+
+            if key in request_stats:
+                stats = request_stats[key]
+                values = [stats.get(m, 0) for m in metrics]
+                labels = ['Mean', 'Median', 'P75', 'P95', 'Max']
+
+                bars = ax.bar(labels, values, color=colors, alpha=0.7, edgecolor='black')
+
+                ax.set_ylabel('Token Count', fontweight='bold')
+                ax.set_title(label, fontweight='bold')
+                ax.yaxis.set_major_formatter(
+                    plt.FuncFormatter(lambda x, p: f'{int(x):,}')
+                )
+                ax.tick_params(axis='x', rotation=45)
+
+                for bar in bars:
+                    height = bar.get_height()
+                    ax.text(
+                        bar.get_x() + bar.get_width()/2., height,
+                        f'{int(height):,}',
+                        ha='center', va='bottom', fontweight='bold', fontsize=8
+                    )
+
+        axes[1, 2].axis('off')
+
+        plt.tight_layout()
+        chart_path = os.path.join(output_dir, 'token-histogram.png')
+        plt.savefig(chart_path, dpi=100, bbox_inches='tight')
+        plt.close()
+
+        return chart_path
+
+    except Exception as e:
+        print(f"Warning: Could not generate histogram: {e}")
+        return None
 
 
 def perform_complete_analysis(raw_data: Dict, pricing_map: Dict) -> Dict:
@@ -250,6 +446,9 @@ def perform_complete_analysis(raw_data: Dict, pricing_map: Dict) -> Dict:
             'statistics': stats
         }
 
+    # Calculate request-level statistics
+    request_statistics = _calculate_request_statistics(daily_data)
+
     # Build complete analysis result
     overall_cache_efficiency = (totals['cacheReadTokens'] / totals['totalTokens'] * 100) if totals['totalTokens'] > 0 else 0
 
@@ -275,6 +474,7 @@ def perform_complete_analysis(raw_data: Dict, pricing_map: Dict) -> Dict:
         },
         'model_combinations': model_combinations,
         'daily_statistics': daily_statistics,
+        'request_statistics': request_statistics,
         'model_statistics': model_statistics
     }
 
@@ -298,6 +498,7 @@ def generate_markdown_from_json(analysis_json: Dict) -> str:
     meta = analysis_json['metadata']
     summary = analysis_json['summary']
     daily_stats = analysis_json['daily_statistics']
+    request_stats = analysis_json.get('request_statistics', {})
     model_stats = analysis_json['model_statistics']
     model_combos = analysis_json['model_combinations']
 
@@ -319,6 +520,33 @@ def generate_markdown_from_json(analysis_json: Dict) -> str:
     report.append(f"- **Cache Read Tokens:** {fmt_num(summary['total_cache_read_tokens'], 0)}")
     report.append(f"- **Overall Cache Efficiency:** {fmt_num(summary['overall_cache_efficiency'])}%")
     report.append("")
+
+    # Per-Request Statistics
+    if request_stats:
+        report.append("## Per-Request Token Statistics")
+        report.append("")
+        report.append("Analysis of token usage across individual requests:")
+        report.append("")
+        report.append("| Token Type | Count | Mean | Median | P75 | P95 | Max |")
+        report.append("|------------|-------|------|--------|-----|-----|-----|")
+
+        for key, label in [
+            ('input_tokens', 'Input Tokens'),
+            ('output_tokens', 'Output Tokens'),
+            ('cache_write_tokens', 'Cache Write'),
+            ('cache_read_tokens', 'Cache Read'),
+            ('total_tokens', 'Total Tokens')
+        ]:
+            if key in request_stats:
+                s = request_stats[key]
+                report.append(
+                    f"| **{label}** | {s['count']} | "
+                    f"{fmt_num(s['mean'], 0)} | {fmt_num(s['median'], 0)} | "
+                    f"{fmt_num(s['p75'], 0)} | {fmt_num(s['p95'], 0)} | "
+                    f"{fmt_num(s['max'], 0)} |"
+                )
+
+        report.append("")
 
     # Tokens per minute estimates (assuming 8-hour workday = 480 minutes)
     MINUTES_PER_WORKDAY = 8 * 60  # 480 minutes
@@ -578,6 +806,7 @@ def generate_quarto_from_json(analysis_json: Dict) -> str:
     meta = analysis_json['metadata']
     summary = analysis_json['summary']
     daily_stats = analysis_json['daily_statistics']
+    request_stats = analysis_json.get('request_statistics', {})
     model_stats = analysis_json['model_statistics']
     model_combos = analysis_json['model_combinations']
 
@@ -639,6 +868,35 @@ def generate_quarto_from_json(analysis_json: Dict) -> str:
     report.append(":::")
     report.append(":::")
     report.append("")
+
+    # Per-Request Statistics
+    if request_stats:
+        report.append("## Per-Request Token Statistics {.unnumbered}")
+        report.append("")
+        report.append("::: {.callout-note}")
+        report.append("Per-request analysis shows how tokens are distributed across individual API requests. This helps understand typical request patterns and identify outliers.")
+        report.append(":::")
+        report.append("")
+        report.append("| Token Type | Count | Mean | Median | P75 | P95 | Max |")
+        report.append("|------------|-------|------|--------|-----|-----|-----|")
+
+        for key, label in [
+            ('input_tokens', 'Input Tokens'),
+            ('output_tokens', 'Output Tokens'),
+            ('cache_write_tokens', 'Cache Write'),
+            ('cache_read_tokens', 'Cache Read'),
+            ('total_tokens', 'Total Tokens')
+        ]:
+            if key in request_stats:
+                s = request_stats[key]
+                report.append(
+                    f"| **{label}** | {s['count']} | "
+                    f"{fmt_num(s['mean'], 0)} | {fmt_num(s['median'], 0)} | "
+                    f"{fmt_num(s['p75'], 0)} | {fmt_num(s['p95'], 0)} | "
+                    f"{fmt_num(s['max'], 0)} |"
+                )
+
+        report.append("")
 
     # Tokens per minute estimates
     MINUTES_PER_WORKDAY = 8 * 60
@@ -1032,6 +1290,20 @@ Output files:
     print(f"Saving analysis JSON to: {json_file}")
     with open(json_file, 'w') as f:
         json.dump(analysis_result, f, indent=2)
+
+    # Generate visualization charts
+    print("Generating token distribution charts...")
+    chart_path = _generate_token_distribution_charts(analysis_result, str(data_output_dir))
+    if chart_path:
+        print(f"Token distribution chart saved to: {chart_path}")
+    else:
+        print("Note: Chart generation skipped (matplotlib not available or no request stats)")
+
+    histogram_path = _generate_request_histogram(analysis_result, str(data_output_dir))
+    if histogram_path:
+        print(f"Token histogram saved to: {histogram_path}")
+    else:
+        print("Note: Histogram generation skipped (matplotlib not available or no request stats)")
 
     # Generate markdown from JSON
     markdown_report = generate_markdown_from_json(analysis_result)
