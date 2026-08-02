@@ -25,6 +25,39 @@ class TestComputeDashboardContext:
         assert ctx["monthly_projection"] == ctx["cost_mean"] * 30
 
 
+class TestModelSplit:
+    """Tests for the per-model cost split."""
+
+    def test_split_sorted_by_cost_descending(self, sample_raw_data, sample_pricing_map):
+        result = analysis.perform_complete_analysis(sample_raw_data, sample_pricing_map)
+        ctx = dashboard._compute_dashboard_context(result)
+        split = ctx["model_split"]
+        assert split
+        costs = [row["cost"] for row in split]
+        assert costs == sorted(costs, reverse=True)
+
+    def test_split_shares_sum_to_100(self, sample_raw_data, sample_pricing_map):
+        result = analysis.perform_complete_analysis(sample_raw_data, sample_pricing_map)
+        ctx = dashboard._compute_dashboard_context(result)
+        total_pct = sum(row["pct"] for row in ctx["model_split"])
+        assert abs(total_pct - 100.0) < 0.01
+
+    def test_split_rows_have_expected_keys(self, sample_raw_data, sample_pricing_map):
+        result = analysis.perform_complete_analysis(sample_raw_data, sample_pricing_map)
+        ctx = dashboard._compute_dashboard_context(result)
+        for key in ("name", "cost", "pct", "days_used", "cache_efficiency"):
+            assert key in ctx["model_split"][0]
+
+    def test_primary_model_matches_first_split_row(self, sample_raw_data, sample_pricing_map):
+        result = analysis.perform_complete_analysis(sample_raw_data, sample_pricing_map)
+        ctx = dashboard._compute_dashboard_context(result)
+        assert ctx["primary_model"] == ctx["model_split"][0]["name"]
+
+    def test_empty_model_stats_yields_empty_split(self):
+        rows = dashboard._build_model_split({}, total_cost=0)
+        assert rows == []
+
+
 class TestGenerateDashboardHtml:
     """Tests for generate_dashboard_html."""
 

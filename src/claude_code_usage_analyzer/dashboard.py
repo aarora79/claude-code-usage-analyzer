@@ -57,6 +57,37 @@ def _population_stddev(
     return statistics.pstdev(values)
 
 
+def _build_model_split(
+    model_stats: dict[str, Any],
+    total_cost: float,
+) -> list[dict[str, Any]]:
+    """Build a per-model cost breakdown sorted from most to least expensive.
+
+    Args:
+        model_stats: The ``model_statistics`` block from the analysis.
+        total_cost: The total cost across all models, used for the share.
+
+    Returns:
+        A list of rows, each with the model name, its total cost, its share of
+        total cost as a percentage, the number of days it was used, and its
+        cache efficiency. Empty when no model statistics are present.
+    """
+    rows: list[dict[str, Any]] = []
+    for name, stats in model_stats.items():
+        model_cost = stats["statistics"]["total_cost"]["total"]
+        rows.append(
+            {
+                "name": name,
+                "cost": model_cost,
+                "pct": (model_cost / total_cost * 100) if total_cost else 0,
+                "days_used": stats["days_used"],
+                "cache_efficiency": stats["cache_efficiency"],
+            }
+        )
+    rows.sort(key=lambda row: row["cost"], reverse=True)
+    return rows
+
+
 def _compute_dashboard_context(
     analysis: dict[str, Any],
 ) -> dict[str, Any]:
@@ -86,15 +117,14 @@ def _compute_dashboard_context(
     fresh_cost = daily_stats["cost_input"]["total"] + daily_stats["cost_output"]["total"]
     fresh_pct = (fresh_cost / total_cost * 100) if total_cost else 0
 
-    # Primary model and its share of total cost.
-    sorted_models = sorted(
-        model_stats.items(),
-        key=lambda item: item[1]["statistics"]["total_cost"]["total"],
-        reverse=True,
-    )
-    primary_name, primary_stats = sorted_models[0] if sorted_models else ("n/a", None)
-    primary_cost = primary_stats["statistics"]["total_cost"]["total"] if primary_stats else 0
-    primary_pct = (primary_cost / total_cost * 100) if total_cost else 0
+    # Per-model cost split, sorted most to least expensive. The first row is the
+    # primary model, so the hero and insight cards reuse it instead of re-sorting.
+    model_split = _build_model_split(model_stats, total_cost)
+    if model_split:
+        primary_name = model_split[0]["name"]
+        primary_pct = model_split[0]["pct"]
+    else:
+        primary_name, primary_pct = "n/a", 0
 
     period = meta["analysis_period"]
     return {
@@ -115,6 +145,7 @@ def _compute_dashboard_context(
         "cache_pct": 100 - fresh_pct,
         "primary_model": primary_name,
         "primary_pct": primary_pct,
+        "model_split": model_split,
     }
 
 
@@ -150,6 +181,7 @@ def generate_dashboard_html(
             "cachePct": ctx["cache_pct"],
             "primaryModel": ctx["primary_model"],
             "primaryPct": ctx["primary_pct"],
+            "modelSplit": ctx["model_split"],
         }
     )
 
@@ -352,6 +384,18 @@ _HTML_TEMPLATE = r"""<!DOCTYPE html>
     <table id="tblEff"><thead><tr><th>Date</th><th>Cache efficiency</th><th>vs. mean</th></tr></thead><tbody></tbody></table>
   </section>
 
+  <section class="card">
+    <div class="card-head">
+      <div>
+        <h2>Spend by model</h2>
+        <p class="desc">How the total cost splits across the models used in this window. A single model carrying most of the spend is a concentration risk worth naming.</p>
+      </div>
+      <button class="table-toggle" data-table="tblModel">Table view</button>
+    </div>
+    <div id="modelChart"></div>
+    <table id="tblModel"><thead><tr><th>Model</th><th>Total cost</th><th>Share</th><th>Days used</th><th>Cache efficiency</th></tr></thead><tbody></tbody></table>
+  </section>
+
   <section class="card" style="background:transparent;border:none;padding:0">
     <div class="insights" id="insights"></div>
   </section>
@@ -496,16 +540,47 @@ function stackedChart({ mount }) {
   mount.appendChild(svg);
 }
 
+const MODEL_COLORS = ["var(--series-1)","var(--series-2)","var(--series-3)","var(--series-4)"];
+
+function modelBarChart({ mount }) {
+  const rows = CTX.modelSplit || [];
+  if (!rows.length) return;
+  const W=1080, rowH=46, m={t:8,r:16,b:8,l:8}, labelW=200, valW=150;
+  const H = m.t + m.b + rows.length*rowH;
+  const barX = m.l + labelW, barMax = W - m.r - valW - barX;
+  const maxCost = Math.max(...rows.map(r=>r.cost), 1);
+  const svg = el("svg", { viewBox:`0 0 ${W} ${H}`, role:"img" });
+  rows.forEach((r,i)=>{ const cy = m.t + i*rowH, mid = cy + rowH/2, color = MODEL_COLORS[i % MODEL_COLORS.length];
+    const w = Math.max(2, barMax * (r.cost/maxCost));
+    const name = el("text",{class:"tick-text",x:m.l,y:mid+4},svg);
+    name.style.fill = "var(--text-primary)"; name.style.fontSize = "13px"; name.textContent = r.name;
+    el("rect",{x:barX,y:mid-11,width:barMax,height:22,rx:4,fill:"var(--grid)"},svg);
+    el("rect",{x:barX,y:mid-11,width:w,height:22,rx:4,fill:color},svg);
+    const val = el("text",{class:"tick-text",x:W-m.r,y:mid+4,"text-anchor":"end"},svg);
+    val.style.fill = "var(--text-primary)"; val.style.fontSize = "13px";
+    val.textContent = fmtUSD2(r.cost) + "  (" + r.pct.toFixed(1) + "%)";
+    const hb = el("rect",{class:"hitbox",x:0,y:cy,width:W,height:rowH},svg);
+    hb.addEventListener("mousemove",e=>{ showTip(`<div class="tt-date">${escapeHtml(r.name)}</div>
+      <div class="tt-row"><span class="k"><span class="tt-dot" style="background:${color}"></span>Total cost</span><span class="v">${fmtUSD2(r.cost)}</span></div>
+      <div class="tt-row"><span class="k">Share of spend</span><span class="v">${r.pct.toFixed(1)}%</span></div>
+      <div class="tt-row"><span class="k">Days used</span><span class="v">${r.days_used}</span></div>
+      <div class="tt-row"><span class="k">Cache efficiency</span><span class="v">${r.cache_efficiency.toFixed(1)}%</span></div>`, e); });
+    hb.addEventListener("mouseleave",hideTip); });
+  mount.appendChild(svg);
+}
+
 lineChart({ mount:$("#spendChart"), accessor:d=>d.total_cost, valueFmt:v=>fmtUSD(v),
   baseline:costMean, limit:costLimit, limitLabel:"+2σ", limitSide:"top", anomKey:"costAnom", color:"var(--emphasis)", unit:"$" });
 stackedChart({ mount:$("#compChart") });
 lineChart({ mount:$("#effChart"), accessor:d=>d.cache_efficiency, valueFmt:v=>v.toFixed(1)+"%",
   baseline:effMean, limit:effLimit, limitLabel:"−2σ", limitSide:"bottom", anomKey:"effAnom", color:"var(--series-3)", unit:"%", yMax:100, yMin:70 });
+modelBarChart({ mount:$("#modelChart") });
 
 function fillTable(id, rows){ $("#"+id+" tbody").innerHTML = rows; }
 fillTable("tblSpend", DATA.map(d=>`<tr class="${d.costAnom?'anom':''}"><td>${shortDate(d.date)}</td><td>${fmtUSD2(d.total_cost)}</td><td>${(d.total_cost-costMean>=0?'+':'')+fmtUSD2(d.total_cost-costMean)}</td></tr>`).join(""));
 fillTable("tblComp", DATA.map(d=>`<tr><td>${shortDate(d.date)}</td><td>${fmtUSD2(d.cost_input)}</td><td>${fmtUSD2(d.cost_output)}</td><td>${fmtUSD2(d.cost_cache_create)}</td><td>${fmtUSD2(d.cost_cache_read)}</td><td>${fmtUSD2(d.total_cost)}</td></tr>`).join(""));
 fillTable("tblEff", DATA.map(d=>`<tr class="${d.effAnom?'anom':''}"><td>${shortDate(d.date)}</td><td>${d.cache_efficiency.toFixed(2)}%</td><td>${(d.cache_efficiency-effMean>=0?'+':'')+(d.cache_efficiency-effMean).toFixed(1)} pts</td></tr>`).join(""));
+fillTable("tblModel", (CTX.modelSplit||[]).map(r=>`<tr><td>${escapeHtml(r.name)}</td><td>${fmtUSD2(r.cost)}</td><td>${r.pct.toFixed(1)}%</td><td>${r.days_used}</td><td>${r.cache_efficiency.toFixed(1)}%</td></tr>`).join(""));
 document.querySelectorAll(".table-toggle").forEach(btn=>btn.addEventListener("click",()=>{ const t=$("#"+btn.dataset.table); const shown=t.classList.toggle("show"); btn.textContent=shown?"Hide table":"Table view"; }));
 
 // insights (data-driven)
