@@ -2,8 +2,19 @@
 
 A command-line tool that turns your Claude Code usage into a detailed cost-and-token report, broken down by day, by model, and by token type (input, output, cache creation, cache read). It resolves pricing dynamically from LiteLLM, so it stays correct as new Claude models ship without any code change.
 
+![Sample tokenomics dashboard](docs/images/sample-dashboard.png)
+
+The self-contained HTML dashboard shown above (rendered from fictional sample data). See [examples/sample-tokenomics-dashboard.html](examples/sample-tokenomics-dashboard.html) for the interactive version.
+
+## Easiest way to get started: the tokenomics-dashboard skill
+
+**The simplest way to run this tool is the [tokenomics-dashboard skill](.claude/skills/tokenomics-dashboard/SKILL.md).** If you are using Claude Code, just run `/tokenomics-dashboard` and answer one question (how many days of history to analyze). The skill fetches your usage with `ccusage`, prices it from LiteLLM, generates the dashboard, and presents it with a director-level cost commentary. You do not need to remember any command-line flags.
+
+Prefer to drive the CLI yourself? The manual steps are in [Usage](#usage) below.
+
 ## Contents
 
+- [Easiest way to get started: the tokenomics-dashboard skill](#easiest-way-to-get-started-the-tokenomics-dashboard-skill)
 - [Features](#features)
 - [How it works](#how-it-works)
 - [Prerequisites](#prerequisites)
