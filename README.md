@@ -1,27 +1,55 @@
 # Claude Code Usage Analyzer
 
-Comprehensive usage and cost analysis tool for Claude Code with detailed breakdowns by model and token type.
+A command-line tool that turns your Claude Code usage into a detailed cost-and-token report, broken down by day, by model, and by token type (input, output, cache creation, cache read). It resolves pricing dynamically from LiteLLM, so it stays correct as new Claude models ship without any code change.
+
+## Contents
+
+- [Features](#features)
+- [How it works](#how-it-works)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Command-line options](#command-line-options)
+- [Output files](#output-files)
+- [Understanding the output](#understanding-the-output)
+- [Rendering the Quarto report](#rendering-the-quarto-report)
+- [Development](#development)
+- [Project structure](#project-structure)
+- [Data sources](#data-sources)
+- [Troubleshooting](#troubleshooting)
+- [License](#license)
 
 ## Features
 
-- **Detailed Cost Analysis**: Break down your daily costs by token type (input, output, cache creation, cache read)
-- **Model-Specific Statistics**: Analyze usage patterns for each Claude model (Opus 4.1, Sonnet 4, Sonnet 4.5)
-- **Cache Efficiency Tracking**: Understand how well caching is reducing your costs
-- **Model Combination Analysis**: See which models were used together and for how many days
-- **Statistical Insights**: Mean, median, P95, min, and max for all metrics
-- **Pricing Information**: Per-million token pricing from LiteLLM
-- **JSON + Markdown Output**: Structured data for automation and human-readable reports
+- Dynamic pricing: resolves every model in your usage data against the LiteLLM pricing table, so newly released models are priced automatically with no code change.
+- Detailed cost analysis: daily cost broken down by token type (input, output, cache creation, cache read), with mean, median, P95, min, and max.
+- Per-model statistics: usage, cost, and cache efficiency for each model you used.
+- Per-request statistics: token distribution across individual requests (mean, median, P75, P95, P99, max).
+- Model combination analysis: which models were used together on the same day, and for how many days.
+- Cache efficiency tracking: how much of your token volume came from (much cheaper) cache reads.
+- Per-minute usage estimates: mean, median, and P95 usage projected onto an 8-hour workday.
+- Multiple output formats: a machine-readable JSON, a human-readable Markdown report, a styled Quarto document, and optional PNG charts.
+
+## How it works
+
+The tool runs in a strict two-phase pipeline so that all numbers are computed once and every report shows the same figures:
+
+1. Analysis phase: read the raw `ccusage` data, resolve pricing from LiteLLM, and compute every statistic into a single analysis dictionary (saved as JSON).
+2. Reporting phase: format that dictionary into Markdown, Quarto, and charts. No calculation happens here.
+
+Pricing is resolved dynamically: the tool collects the model names that actually appear in your data and looks each one up in the LiteLLM table (preferring an exact match). A model with no pricing entry is logged as a warning and simply shows a zero cost breakdown, rather than causing a crash.
 
 ## Prerequisites
 
-- Python 3.9 or higher
+- Python 3.10 or higher
 - [uv](https://docs.astral.sh/uv/) package manager
 - Claude Code with usage data
-- Node.js and npm (for npx to run [ccusage](https://www.npmjs.com/package/ccusage))
+- Node.js and npm (for `npx` to run [ccusage](https://www.npmjs.com/package/ccusage))
+- Internet access (to fetch current pricing from LiteLLM)
 
 ### Install Node.js/npm (if not already installed)
 
-The tool uses `npx ccusage` to fetch Claude Code usage data. Install Node.js if you don't have it:
+The tool uses `npx ccusage` to fetch Claude Code usage data. Install Node.js if you do not have it:
 
 ```bash
 # On Ubuntu/Debian
@@ -33,7 +61,8 @@ brew install node
 # Or download from https://nodejs.org/
 ```
 
-Verify installation:
+Verify:
+
 ```bash
 node --version
 npm --version
@@ -44,321 +73,195 @@ npm --version
 ### Install uv (if not already installed)
 
 ```bash
-# Install uv
 curl -LsSf https://astral.sh/uv/install.sh | sh
-
-# Add uv to your current shell session
 source $HOME/.local/bin/env
-
-# Or restart your shell
-exec $SHELL
 ```
 
-### Clone and Run
+### Clone and run
 
 ```bash
-# Clone the repository
 git clone https://github.com/yourusername/claude-code-usage-analyzer.git
 cd claude-code-usage-analyzer
 
-# Sync dependencies and create virtual environment
-uv sync
-
-# Activate the virtual environment
-source .venv/bin/activate
-
-# Run the analyzer
-python -m claude_code_usage_analyzer
-
-# Or run directly with uv (without activating venv)
-uv run python -m claude_code_usage_analyzer
-
-# Or use the installed command
-claude-usage-analyzer
+# The core tool needs no dependencies, so you can run it straight away:
+uv run claude-usage-analyzer
 ```
 
-### Alternative: Run Directly Without Cloning
+The core tool depends only on the Python standard library. Charts are an optional extra:
 
 ```bash
-# Download and run in one command
-uvx --from git+https://github.com/yourusername/claude-code-usage-analyzer claude-usage-analyzer
+# Install the optional matplotlib/numpy extra to also generate PNG charts
+uv sync --extra charts
 ```
 
 ## Usage
 
-### Quick Start (Automatic)
+### Quick start
 
-The analyzer will automatically fetch your usage data if not already present:
-
-```bash
-# Using uv (recommended) - fetches data automatically
-uv run python -m claude_code_usage_analyzer
-
-# Or with custom start date (YYYYMMDD format)
-uv run python -m claude_code_usage_analyzer --since 20250901
-
-# Force refresh data even if cached
-uv run python -m claude_code_usage_analyzer --refresh
-
-# Or if installed (after uv sync and activating venv)
-claude-usage-analyzer --help
-```
-
-The tool will:
-1. Check if `data/raw/claude-usage-raw.json` exists
-2. If not, automatically run `npx ccusage@latest` to fetch your data (uses [ccusage](https://www.npmjs.com/package/ccusage))
-3. Perform analysis
-4. Generate JSON and markdown reports in `data/output/`
-
-### Manual Workflow (Optional)
-
-If you prefer to fetch data manually or the automatic fetch fails:
-
-#### Step 1: Generate Raw Usage Data
+The analyzer fetches your usage data automatically the first time it runs:
 
 ```bash
-mkdir -p data/raw
-npx ccusage@latest daily --since 20250701 --breakdown --json > data/raw/claude-usage-raw.json
+# Fetch data (if needed), analyze, and write reports
+uv run claude-usage-analyzer
+
+# Start from a specific date (YYYYMMDD)
+uv run claude-usage-analyzer --since 20260101
+
+# Force a re-fetch even if a cache exists
+uv run claude-usage-analyzer --refresh
+
+# Verbose debug logging
+uv run claude-usage-analyzer --debug
 ```
 
-#### Step 2: Run the Analyzer
+On the first run the tool will:
 
-```bash
-uv run python -m claude_code_usage_analyzer
-```
+1. Check whether `data/raw/claude-usage-raw.json` exists.
+2. If not, run `npx ccusage@latest` to fetch your data.
+3. Resolve pricing from LiteLLM for the models found.
+4. Perform the analysis and write JSON, Markdown, and Quarto reports (plus charts if matplotlib is installed) to `data/output/`.
 
-### Output Files
+### Manual data fetch (optional)
 
-The analyzer generates two files in the `data/output/` directory:
+If you prefer to fetch data yourself, or the automatic fetch fails:
 
-1. **`data/output/claude-usage-analysis.json`** - Complete analysis in JSON format
-   - All computed statistics
-   - Model combinations
-   - Daily and model-specific breakdowns
-   - Pricing information
-
-2. **`data/output/claude-usage-report.md`** - Human-readable markdown report
-   - Executive summary
-   - Daily cost analysis
-   - Token usage statistics
-   - Cache efficiency metrics
-   - Model-specific insights
-
-Raw usage data is cached in `data/raw/claude-usage-raw.json` for faster subsequent runs.
-
-## Understanding the Output
-
-### JSON Structure
-
-```json
-{
-  "metadata": {
-    "analysis_period": {
-      "start_date": "2025-09-09",
-      "end_date": "2025-10-09",
-      "total_days": 31
-    },
-    "generated_at": "2025-10-09T21:08:50",
-    "source": "ccusage CLI tool",
-    "pricing_source": "https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json"
-  },
-  "summary": {
-    "total_cost": 989.90,
-    "total_tokens": 1126304159,
-    "overall_cache_efficiency": 92.66
-  },
-  "model_combinations": [
-    {
-      "models": ["opus-4-1", "sonnet-4"],
-      "days": 20
-    }
-  ],
-  "daily_statistics": {
-    "total_cost": {
-      "mean": 31.93,
-      "median": 29.54,
-      "p95": 65.15,
-      "min": 1.14,
-      "max": 75.29
-    },
-    "cost_breakdown": {
-      "input": { ... },
-      "output": { ... },
-      "cache_create": { ... },
-      "cache_read": { ... }
-    }
-  },
-  "model_statistics": {
-    "opus-4-1": {
-      "pricing_per_million_tokens": {
-        "input": 15.0,
-        "output": 75.0,
-        "cache_create": 18.75,
-        "cache_read": 1.5
-      },
-      "statistics": { ... }
-    }
-  }
-}
-```
-
-### Key Metrics Explained
-
-#### Cache Efficiency
-Calculated as: `(Cache Read Tokens / Total Tokens) × 100`
-
-Higher percentages mean:
-- Fewer tokens processed from scratch
-- Lower costs (cache reads cost 10-20x less)
-- Faster response times
-
-#### Cost Breakdown by Token Type
-Your daily cost is composed of:
-- **Input tokens**: New prompts and messages
-- **Output tokens**: Model-generated responses
-- **Cache creation**: First-time caching of context
-- **Cache reads**: Reusing cached context (cheapest)
-
-#### Model Combinations
-Shows which models were used together on the same day, helping identify usage patterns and transitions between models.
-
-## Example Output
-
-### Daily Cost Analysis
-```
-Average Daily Cost: $31.93
-  - Input tokens: $0.02 (0.06%)
-  - Output tokens: $0.98 (3.07%)
-  - Cache creation: $15.00 (46.98%)
-  - Cache reads: $15.93 (49.89%)
-```
-
-### Model Pricing (Per Million Tokens)
-```
-Claude Opus 4.1:
-  - Input: $15.00
-  - Output: $75.00
-  - Cache Create: $18.75
-  - Cache Read: $1.50
-
-Claude Sonnet 4/4.5:
-  - Input: $3.00
-  - Output: $15.00
-  - Cache Create: $3.75
-  - Cache Read: $0.30
-```
-
-## Customization
-
-### Custom Input/Output Paths
-
-By default, the tool uses:
-- **Raw data**: `data/raw/claude-usage-raw.json`
-- **JSON output**: `data/output/claude-usage-analysis.json`
-- **Markdown output**: `data/output/claude-usage-report.md`
-
-These directories are created automatically if they don't exist.
-
-### Command Line Options
-
-```bash
-# Show help
-claude-usage-analyzer --help
-
-# Specify start date for usage data (YYYYMMDD format)
-claude-usage-analyzer --since 20250901
-
-# Force re-fetch of data (ignores cache)
-claude-usage-analyzer --refresh
-
-# Combine options
-claude-usage-analyzer --since 20250801 --refresh
-```
-
-## Sample Files
-
-Check the `examples/` directory for:
-- [sample-analysis.json](examples/sample-analysis.json) - Example JSON output
-- [sample-report.md](examples/sample-report.md) - Example markdown report
-
-## Troubleshooting
-
-### "No such file or directory: data/raw/claude-usage-raw.json"
-
-The tool should automatically fetch this data. If it fails, generate it manually:
 ```bash
 mkdir -p data/raw
-npx ccusage@latest daily --since 20250701 --breakdown --json > data/raw/claude-usage-raw.json
+npx ccusage@latest daily --since 20260101 --breakdown --json > data/raw/claude-usage-raw.json
+uv run claude-usage-analyzer
 ```
 
-### "Failed to fetch pricing from LiteLLM"
+## Command-line options
 
-The tool needs internet access to fetch current pricing. If offline, it will fail. Ensure you have a working internet connection.
+| Option | Default | Description |
+|--------|---------|-------------|
+| `--since` | `20250101` | Start date for usage data (YYYYMMDD). |
+| `--refresh` | off | Force a re-fetch of raw data even if a cache exists. |
+| `--raw-data-path` | `data/raw/claude-usage-raw.json` | Path to the raw ccusage cache. |
+| `--output-dir` | `data/output` | Directory for the generated reports. |
+| `--debug` | off | Enable verbose debug logging. |
 
-### Pricing seems outdated
+Run `uv run claude-usage-analyzer --help` for the full list.
 
-The tool fetches pricing directly from LiteLLM's GitHub repository. If you notice discrepancies:
-1. Check https://github.com/BerriAI/litellm/blob/main/model_prices_and_context_window.json
-2. Verify your Claude model names match the pricing database
+## Output files
 
-## Architecture
+Written to the output directory (default `data/output/`):
 
-The tool follows a two-step process:
+1. `claude-usage-analysis.json` - the complete analysis (all statistics, model combinations, pricing). Use this for automation.
+2. `claude-usage-report.md` - a human-readable Markdown report.
+3. `claude-usage-report.qmd` - a Quarto document you can render to HTML or PDF.
+4. `token-distribution.png` and `token-histogram.png` - charts (only when the `charts` extra is installed).
 
-1. **Analysis Phase**:
-   - Reads raw ccusage JSON
-   - Fetches current pricing from LiteLLM
-   - Performs all statistical calculations
-   - Saves complete results to JSON
+Raw usage data is cached at `data/raw/claude-usage-raw.json` for faster subsequent runs.
 
-2. **Report Generation Phase**:
-   - Reads the analysis JSON
-   - Formats data into markdown report
-   - No calculations, just formatting
+## Understanding the output
 
-This separation ensures:
-- All computed data is available in JSON for automation
-- Markdown can be regenerated without re-analysis
-- Easy integration with other tools
+### Cache efficiency
 
-## Contributing
+Calculated as `(Cache Read Tokens / Total Tokens) x 100`. Higher is better: cache reads cost far less than fresh tokens, so a high cache-read share means lower cost and faster responses.
 
-Contributions are welcome! Please:
+### Cost breakdown by token type
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
+Your cost is composed of input tokens (new prompts), output tokens (model responses), cache creation (first-time caching of context), and cache reads (reusing cached context, the cheapest).
 
-## License
+### Model combinations
 
-MIT License - see LICENSE file for details
+Shows which models were used together on the same day, which helps identify usage patterns and transitions between models.
 
-## Data Sources
+### Sample output
+
+See the [examples/](examples/) directory for fictional sample outputs:
+
+- [sample-analysis.json](examples/sample-analysis.json)
+- [sample-report.md](examples/sample-report.md)
+- [sample-report.qmd](examples/sample-report.qmd)
+
+## Rendering the Quarto report
+
+If you have [Quarto](https://quarto.org/) installed:
+
+```bash
+quarto render data/output/claude-usage-report.qmd --to html
+quarto render data/output/claude-usage-report.qmd --to pdf
+```
+
+## Development
+
+This project follows the coding standards in [CLAUDE.md](CLAUDE.md). Install the dev tools and run the full quality gate before committing:
+
+```bash
+# Install dev dependencies (ruff, mypy, bandit, pytest, matplotlib)
+uv sync --group dev
+
+# Run everything
+uv run ruff check --fix . && uv run ruff format . && uv run bandit -r src/ && uv run mypy src/ && uv run pytest
+```
+
+### Tests
+
+```bash
+uv run pytest -q
+```
+
+Tests stub the network and subprocess layers, so they run offline and fast.
+
+### Security gate
+
+A `security-check` skill (`.claude/skills/security-check/`) reviews the pending diff against a catalog of security anti-patterns (subprocess safety, SSRF, untrusted-input parsing, secret/PII leakage) and must pass before committing or opening a PR. See [CLAUDE.md](CLAUDE.md) for details.
+
+## Project structure
+
+```
+claude_code_usage_analyzer/
+|-- src/claude_code_usage_analyzer/
+|   |-- __main__.py        # CLI orchestration
+|   |-- constants.py       # shared constants
+|   |-- data_source.py     # ccusage subprocess + loading
+|   |-- pricing.py         # dynamic LiteLLM pricing resolution
+|   |-- analysis.py        # pure statistical analysis (no I/O)
+|   |-- reporting.py       # Markdown + Quarto generation
+|   `-- charts.py          # optional matplotlib charts
+|-- tests/                 # pytest suite
+|-- examples/              # fictional sample outputs
+|-- data/                  # generated output (gitignored)
+|-- pyproject.toml
+|-- CLAUDE.md              # coding standards
+`-- README.md
+```
+
+## Data sources
 
 This tool analyzes Claude Code usage data from two sources:
 
-1. **ccusage CLI tool**: The [ccusage](https://www.npmjs.com/package/ccusage) npm package aggregates and formats usage data
-2. **Raw conversation data**: Token usage is stored in `${HOME}/.claude/projects/<project-name>/<conversation-id>.jsonl` files
+1. [ccusage](https://www.npmjs.com/package/ccusage): an npm package that reads Claude Code's local usage files and aggregates them per day and per model. The analyzer shells out to it via `npx`.
+2. Raw conversation data: token usage is stored by Claude Code in `${HOME}/.claude/projects/<project-name>/<conversation-id>.jsonl` files. ccusage reads these; you can also inspect them directly for custom analysis.
 
-The tool uses the ccusage CLI for convenient access to aggregated data, but you can also directly access the raw `.jsonl` files if needed for custom analysis.
+Pricing comes from the [LiteLLM](https://github.com/BerriAI/litellm) `model_prices_and_context_window.json` table, fetched over HTTPS at run time.
+
+## Troubleshooting
+
+### "The 'npx' command was not found"
+
+Install Node.js and npm (see [Prerequisites](#prerequisites)), or fetch the data manually and pass `--raw-data-path`.
+
+### "Failed to fetch pricing from LiteLLM"
+
+The tool needs internet access to fetch current pricing. Check your connection and retry.
+
+### A model shows a zero cost breakdown
+
+The tool logs a warning when a model in your data has no matching LiteLLM pricing entry. Token counts are still reported; only the computed cost breakdown is zero for that model. Check whether the model name has a pricing entry at the [LiteLLM table](https://github.com/BerriAI/litellm/blob/main/model_prices_and_context_window.json).
+
+### Charts are not generated
+
+Charts require the optional extra. Install it with `uv sync --extra charts`.
+
+## License
+
+MIT License - see [LICENSE](LICENSE) for details.
 
 ## Acknowledgments
 
-- Built for [Claude Code](https://docs.claude.com/en/docs/claude-code) users
-- Pricing data from [LiteLLM](https://github.com/BerriAI/litellm)
-- Usage data from [ccusage](https://www.npmjs.com/package/ccusage) CLI tool
-
-## Support
-
-For issues, questions, or suggestions:
-- Open an issue on GitHub
-- Check existing issues for solutions
-
-## Roadmap
-
-- [ ] Support for custom date ranges via CLI arguments
-- [ ] Visualization of usage trends over time
-- [ ] Cost optimization recommendations
-- [ ] Export to CSV/Excel formats
-- [ ] Integration with CI/CD for automated reporting
+- Built for [Claude Code](https://docs.claude.com/en/docs/claude-code) users.
+- Pricing data from [LiteLLM](https://github.com/BerriAI/litellm).
+- Usage data from the [ccusage](https://www.npmjs.com/package/ccusage) CLI tool.

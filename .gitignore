@@ -29,8 +29,18 @@ Thumbs.db
 # Project specific
 /tmp/
 data/
+.scratchpad/
+
+# Ignore stray generated JSON/Markdown, but keep the docs and examples we track.
 *.json
 *.md
 !examples/*.json
 !examples/*.md
+!examples/*.qmd
 !README.md
+!CLAUDE.md
+!.claude/**/*.md
+
+# Keep dependency lockfile and project config tracked.
+!uv.lock
+!pyproject.toml

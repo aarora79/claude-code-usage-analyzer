@@ -1,4 +1,20 @@
-# Claude Code Usage Analysis Report
+---
+title: "Claude Code Usage Analysis Report"
+subtitle: "Comprehensive cost and token analysis"
+date: "2026-08-02"
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 3
+    toc-location: left
+    embed-resources: true
+    page-layout: full
+  pdf:
+    toc: true
+    colorlinks: true
+---
+
 
 **Analysis Period:** 2026-07-01 to 2026-07-21 (21 days)
 **Report Generated:** 2026-08-02 22:34:56
