@@ -82,6 +82,27 @@ class TestPerformCompleteAnalysis:
         assert result["daily_statistics"]["cost_input"]["total"] == 0
         assert result["summary"]["total_tokens"] == 69000
 
+    def test_daily_series_present_and_sorted(self, sample_raw_data, sample_pricing_map):
+        result = analysis.perform_complete_analysis(sample_raw_data, sample_pricing_map)
+        series = result["daily_series"]
+        assert len(series) == 2
+        dates = [row["date"] for row in series]
+        assert dates == sorted(dates)
+        assert dates[0] == "2026-01-01"
+
+    def test_daily_series_cost_breakdown_sums_to_total(self, sample_raw_data, sample_pricing_map):
+        result = analysis.perform_complete_analysis(sample_raw_data, sample_pricing_map)
+        row = result["daily_series"][0]
+        # Day 1 opus: input 1000*5e-6 + output 2000*25e-6 + cc 3000*6.25e-6 + cr 40000*5e-7
+        parts = (
+            row["cost_input"]
+            + row["cost_output"]
+            + row["cost_cache_create"]
+            + row["cost_cache_read"]
+        )
+        # 0.005 + 0.05 + 0.01875 + 0.02 = 0.09375
+        assert parts == pytest.approx(0.09375, abs=1e-4)
+
     def test_handles_zero_total_tokens(self, sample_pricing_map):
         raw = {
             "daily": [

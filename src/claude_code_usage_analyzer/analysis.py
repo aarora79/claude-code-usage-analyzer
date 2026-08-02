@@ -281,6 +281,50 @@ def _collect_daily_statistics(
     return daily_statistics
 
 
+def _collect_daily_series(
+    daily_data: list[dict[str, Any]],
+    pricing_map: dict[str, dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Build a per-day time series for trend charts.
+
+    Unlike the aggregate statistics, this preserves one record per day so a
+    dashboard can plot spend, cost composition, and cache efficiency over time.
+
+    Args:
+        daily_data: The per-day usage records from ccusage.
+        pricing_map: Resolved pricing keyed by model name.
+
+    Returns:
+        One record per day, sorted by date, with cost broken down by token type.
+    """
+    series = []
+    for day in daily_data:
+        day_costs = {"input": 0.0, "output": 0.0, "cache_create": 0.0, "cache_read": 0.0}
+        for breakdown in day.get("modelBreakdowns", []):
+            pricing = pricing_map.get(breakdown["modelName"])
+            if pricing is None:
+                continue
+            for key, value in _breakdown_cost(breakdown, pricing).items():
+                day_costs[key] += value
+
+        total_tokens = day["totalTokens"]
+        efficiency = (day["cacheReadTokens"] / total_tokens * 100) if total_tokens else 0
+        series.append(
+            {
+                "date": _day_date(day),
+                "total_cost": day["totalCost"],
+                "total_tokens": total_tokens,
+                "cost_input": round(day_costs["input"], 4),
+                "cost_output": round(day_costs["output"], 4),
+                "cost_cache_create": round(day_costs["cache_create"], 4),
+                "cost_cache_read": round(day_costs["cache_read"], 4),
+                "cache_efficiency": round(efficiency, 2),
+            }
+        )
+
+    return sorted(series, key=lambda record: record["date"])
+
+
 def _collect_model_statistics(
     daily_data: list[dict[str, Any]],
     pricing_map: dict[str, dict[str, Any]],
@@ -445,6 +489,7 @@ def perform_complete_analysis(
         },
         "model_combinations": analyze_model_combinations(daily_data),
         "daily_statistics": _collect_daily_statistics(daily_data, pricing_map),
+        "daily_series": _collect_daily_series(daily_data, pricing_map),
         "request_statistics": _calculate_request_statistics(daily_data),
         "model_statistics": _collect_model_statistics(daily_data, pricing_map),
     }

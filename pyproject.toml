@@ -66,6 +66,8 @@ ignore = ["S101"]  # assert is fine in tests
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["S"]
+# dashboard.py embeds a long HTML/CSS/JS template string; line length does not apply.
+"src/claude_code_usage_analyzer/dashboard.py" = ["E501"]
 
 [tool.mypy]
 python_version = "3.10"

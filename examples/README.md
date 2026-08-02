@@ -12,9 +12,9 @@ The contents of this folder are for demonstration purposes only.
 
 ## Files
 
-- `sample-analysis.json` - Example JSON output showing the complete analysis structure with all computed statistics, model combinations, and pricing information.
+- `sample-analysis.json` - Example JSON output showing the complete analysis structure with all computed statistics, the daily time series, model combinations, and pricing information.
 - `sample-report.md` - Example Markdown report showing the human-readable format.
-- `sample-report.qmd` - Example Quarto document (render with `quarto render sample-report.qmd --to html`).
+- `sample-tokenomics-dashboard.html` - Example self-contained HTML dashboard (open directly in any browser; no server or dependencies needed).
 
 ## Usage
 

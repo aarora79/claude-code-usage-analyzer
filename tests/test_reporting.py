@@ -43,18 +43,6 @@ class TestGenerateMarkdownReport:
         assert "opus-4-8" in report
         assert "claude-opus-4-8" not in report  # prefix should be stripped
 
-
-class TestGenerateQuartoReport:
-    """Tests for the Quarto report generator."""
-
-    def test_has_yaml_front_matter(self, sample_raw_data, sample_pricing_map):
-        result = analysis.perform_complete_analysis(sample_raw_data, sample_pricing_map)
-        qmd = reporting.generate_quarto_report(result)
-        assert qmd.startswith("---")
-        assert "format:" in qmd
-
-    def test_drops_duplicate_h1_title(self, sample_raw_data, sample_pricing_map):
-        result = analysis.perform_complete_analysis(sample_raw_data, sample_pricing_map)
-        qmd = reporting.generate_quarto_report(result)
-        # The H1 markdown title is replaced by the YAML title.
-        assert "# Claude Code Usage Analysis Report" not in qmd
+    def test_no_quarto_generator_remains(self):
+        # Quarto output was removed in favor of the HTML dashboard.
+        assert not hasattr(reporting, "generate_quarto_report")

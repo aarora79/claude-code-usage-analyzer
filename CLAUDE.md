@@ -12,7 +12,7 @@ Coding standards and best practices for all code in this repository. These rules
 
 ## What this repository is
 
-A command-line usage-and-cost analysis tool for Claude Code. It shells out to the `ccusage` npm CLI to gather aggregated usage data, downloads a pricing table from LiteLLM over HTTPS, computes statistics, and writes JSON, Markdown, and Quarto reports plus optional charts. There is no web server or database. Pricing is resolved dynamically from LiteLLM against whatever models appear in the data, so new models work with no code change.
+A command-line usage-and-cost analysis tool for Claude Code. It shells out to the `ccusage` npm CLI to gather aggregated usage data, downloads a pricing table from LiteLLM over HTTPS, computes statistics, and writes a JSON analysis, a Markdown report, and a self-contained HTML dashboard, plus optional PNG charts. There is no web server or database. Pricing is resolved dynamically from LiteLLM against whatever models appear in the data, so new models work with no code change.
 
 ## Technology Stack
 
@@ -71,7 +71,8 @@ The package is split by responsibility so the logic stays testable:
 - `data_source.py` -- fetch and load ccusage data (the only subprocess site).
 - `pricing.py` -- resolve model pricing dynamically from LiteLLM.
 - `analysis.py` -- pure statistical analysis; no I/O, so it is trivial to unit test.
-- `reporting.py` -- format the analysis into Markdown and Quarto; no calculation.
+- `reporting.py` -- format the analysis into the Markdown report; no calculation.
+- `dashboard.py` -- render the self-contained HTML dashboard from the analysis (data-viz method: validated palette, mean baselines, 2 sigma anomaly bands, table-view relief, dark mode). No calculation beyond deriving chart context.
 - `charts.py` -- optional matplotlib charts; degrades to no-op when matplotlib is absent.
 - `__main__.py` -- CLI orchestration only.
 
@@ -221,7 +222,7 @@ Ruff config targets Python 3.10+ (100-char lines) and auto-modernizes type hints
 
 ## Project Structure
 
-```
+```text
 claude_code_usage_analyzer/
 |-- src/claude_code_usage_analyzer/
 |   |-- __main__.py        # CLI orchestration
@@ -229,7 +230,8 @@ claude_code_usage_analyzer/
 |   |-- data_source.py     # ccusage subprocess + loading
 |   |-- pricing.py         # dynamic LiteLLM pricing
 |   |-- analysis.py        # pure statistics
-|   |-- reporting.py       # Markdown + Quarto
+|   |-- reporting.py       # Markdown report
+|   |-- dashboard.py       # self-contained HTML dashboard
 |   `-- charts.py          # optional matplotlib
 |-- tests/                 # pytest suite
 |-- examples/              # fictional sample outputs

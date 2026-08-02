@@ -28,14 +28,15 @@ A command-line tool that turns your Claude Code usage into a detailed cost-and-t
 - Model combination analysis: which models were used together on the same day, and for how many days.
 - Cache efficiency tracking: how much of your token volume came from (much cheaper) cache reads.
 - Per-minute usage estimates: mean, median, and P95 usage projected onto an 8-hour workday.
-- Multiple output formats: a machine-readable JSON, a human-readable Markdown report, a styled Quarto document, and optional PNG charts.
+- Self-contained HTML dashboard: a single-file tokenomics dashboard (no server, no dependencies, no CDN) with time-series charts, mean baselines, mean +/- 2 sigma control limits, anomaly flagging, a light/dark toggle, tooltips, and a table view behind every chart.
+- Multiple output formats: a machine-readable JSON, a human-readable Markdown report, the HTML dashboard, and optional PNG charts.
 
 ## How it works
 
 The tool runs in a strict two-phase pipeline so that all numbers are computed once and every report shows the same figures:
 
-1. Analysis phase: read the raw `ccusage` data, resolve pricing from LiteLLM, and compute every statistic into a single analysis dictionary (saved as JSON).
-2. Reporting phase: format that dictionary into Markdown, Quarto, and charts. No calculation happens here.
+1. Analysis phase: read the raw `ccusage` data, resolve pricing from LiteLLM, and compute every statistic (including a per-day time series) into a single analysis dictionary (saved as JSON).
+2. Reporting phase: format that dictionary into a Markdown report, the HTML dashboard, and PNG charts. No calculation happens here.
 
 Pricing is resolved dynamically: the tool collects the model names that actually appear in your data and looks each one up in the LiteLLM table (preferring an exact match). A model with no pricing entry is logged as a warning and simply shows a zero cost breakdown, rather than causing a crash.
 
@@ -147,9 +148,9 @@ Run `uv run claude-usage-analyzer --help` for the full list.
 
 Written to the output directory (default `data/output/`):
 
-1. `claude-usage-analysis.json` - the complete analysis (all statistics, model combinations, pricing). Use this for automation.
+1. `claude-usage-analysis.json` - the complete analysis (all statistics, the daily time series, model combinations, pricing). Use this for automation.
 2. `claude-usage-report.md` - a human-readable Markdown report.
-3. `claude-usage-report.qmd` - a Quarto document you can render to HTML or PDF.
+3. `tokenomics-dashboard.html` - a self-contained HTML dashboard (open directly in a browser; no server or dependencies).
 4. `token-distribution.png` and `token-histogram.png` - charts (only when the `charts` extra is installed).
 
 Raw usage data is cached at `data/raw/claude-usage-raw.json` for faster subsequent runs.
@@ -174,16 +175,20 @@ See the [examples/](examples/) directory for fictional sample outputs:
 
 - [sample-analysis.json](examples/sample-analysis.json)
 - [sample-report.md](examples/sample-report.md)
-- [sample-report.qmd](examples/sample-report.qmd)
+- [sample-tokenomics-dashboard.html](examples/sample-tokenomics-dashboard.html)
 
-## Rendering the Quarto report
+## The HTML dashboard
 
-If you have [Quarto](https://quarto.org/) installed:
+`tokenomics-dashboard.html` is a single self-contained file: all CSS and JavaScript are inline, the charts are hand-drawn SVG, and there are no external requests (no CDN, web fonts, or chart libraries). Open it directly in any browser, or email or archive it as-is.
 
-```bash
-quarto render data/output/claude-usage-report.qmd --to html
-quarto render data/output/claude-usage-report.qmd --to pdf
-```
+It is oriented toward cost governance and includes:
+
+- A hero spend figure and a KPI row (total spend, mean daily spend, cost per million tokens, cache efficiency).
+- A daily-spend time series with the mean as a baseline and a red mean + 2 sigma control limit; days beyond it are flagged as cost anomalies.
+- A stacked daily cost-composition chart (input, output, cache creation, cache read).
+- A cache-efficiency time series with the mean baseline and a red mean - 2 sigma lower limit; dips below it are flagged.
+- Data-driven insight cards (cost concentration, cache health, and any detected anomalies).
+- A light/dark toggle, hover tooltips, and a table view behind every chart.
 
 ## Development
 
@@ -219,7 +224,8 @@ claude_code_usage_analyzer/
 |   |-- data_source.py     # ccusage subprocess + loading
 |   |-- pricing.py         # dynamic LiteLLM pricing resolution
 |   |-- analysis.py        # pure statistical analysis (no I/O)
-|   |-- reporting.py       # Markdown + Quarto generation
+|   |-- reporting.py       # Markdown report generation
+|   |-- dashboard.py       # self-contained HTML dashboard
 |   `-- charts.py          # optional matplotlib charts
 |-- tests/                 # pytest suite
 |-- examples/              # fictional sample outputs

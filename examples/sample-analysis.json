@@ -5,7 +5,7 @@
       "end_date": "2026-07-21",
       "total_days": 21
     },
-    "generated_at": "2026-08-02T22:34:56.266603",
+    "generated_at": "2026-08-02T23:05:10.437921",
     "source": "ccusage CLI tool",
     "pricing_source": "https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json"
   },
@@ -116,6 +116,218 @@
       "max": 97.3723155506951
     }
   },
+  "daily_series": [
+    {
+      "date": "2026-07-01",
+      "total_cost": 8.815,
+      "total_tokens": 19119853,
+      "cost_input": 0.0153,
+      "cost_output": 0.1239,
+      "cost_cache_create": 2.5968,
+      "cost_cache_read": 6.0791,
+      "cache_efficiency": 95.89
+    },
+    {
+      "date": "2026-07-02",
+      "total_cost": 11.8722,
+      "total_tokens": 24219524,
+      "cost_input": 0.0168,
+      "cost_output": 0.286,
+      "cost_cache_create": 2.8588,
+      "cost_cache_read": 8.7106,
+      "cache_efficiency": 96.94
+    },
+    {
+      "date": "2026-07-03",
+      "total_cost": 15.7699,
+      "total_tokens": 34360257,
+      "cost_input": 0.0058,
+      "cost_output": 0.2013,
+      "cost_cache_create": 5.8225,
+      "cost_cache_read": 9.7404,
+      "cache_efficiency": 96.05
+    },
+    {
+      "date": "2026-07-04",
+      "total_cost": 11.6087,
+      "total_tokens": 23073552,
+      "cost_input": 0.0148,
+      "cost_output": 0.2546,
+      "cost_cache_create": 3.7032,
+      "cost_cache_read": 7.6361,
+      "cache_efficiency": 96.28
+    },
+    {
+      "date": "2026-07-05",
+      "total_cost": 9.5025,
+      "total_tokens": 17181174,
+      "cost_input": 0.0107,
+      "cost_output": 0.2269,
+      "cost_cache_create": 4.205,
+      "cost_cache_read": 5.0599,
+      "cache_efficiency": 94.08
+    },
+    {
+      "date": "2026-07-06",
+      "total_cost": 12.0484,
+      "total_tokens": 26514812,
+      "cost_input": 0.0115,
+      "cost_output": 0.1213,
+      "cost_cache_create": 4.6596,
+      "cost_cache_read": 7.2561,
+      "cache_efficiency": 96.09
+    },
+    {
+      "date": "2026-07-07",
+      "total_cost": 10.584,
+      "total_tokens": 24400236,
+      "cost_input": 0.0144,
+      "cost_output": 0.1351,
+      "cost_cache_create": 5.2048,
+      "cost_cache_read": 5.2297,
+      "cache_efficiency": 94.3
+    },
+    {
+      "date": "2026-07-08",
+      "total_cost": 12.3108,
+      "total_tokens": 27743456,
+      "cost_input": 0.0061,
+      "cost_output": 0.1122,
+      "cost_cache_create": 2.6549,
+      "cost_cache_read": 9.5376,
+      "cache_efficiency": 97.32
+    },
+    {
+      "date": "2026-07-09",
+      "total_cost": 12.5608,
+      "total_tokens": 26899219,
+      "cost_input": 0.0059,
+      "cost_output": 0.2456,
+      "cost_cache_create": 4.2849,
+      "cost_cache_read": 8.0245,
+      "cache_efficiency": 95.98
+    },
+    {
+      "date": "2026-07-10",
+      "total_cost": 14.7703,
+      "total_tokens": 33808622,
+      "cost_input": 0.0113,
+      "cost_output": 0.1516,
+      "cost_cache_create": 4.224,
+      "cost_cache_read": 10.3834,
+      "cache_efficiency": 96.83
+    },
+    {
+      "date": "2026-07-11",
+      "total_cost": 13.6789,
+      "total_tokens": 31185432,
+      "cost_input": 0.0073,
+      "cost_output": 0.1726,
+      "cost_cache_create": 5.5673,
+      "cost_cache_read": 7.9317,
+      "cache_efficiency": 95.72
+    },
+    {
+      "date": "2026-07-12",
+      "total_cost": 8.2072,
+      "total_tokens": 14784440,
+      "cost_input": 0.0091,
+      "cost_output": 0.1158,
+      "cost_cache_create": 4.102,
+      "cost_cache_read": 3.9803,
+      "cache_efficiency": 92.32
+    },
+    {
+      "date": "2026-07-13",
+      "total_cost": 11.6344,
+      "total_tokens": 27722777,
+      "cost_input": 0.0082,
+      "cost_output": 0.3332,
+      "cost_cache_create": 4.8308,
+      "cost_cache_read": 6.4622,
+      "cache_efficiency": 95.06
+    },
+    {
+      "date": "2026-07-14",
+      "total_cost": 10.0805,
+      "total_tokens": 20212410,
+      "cost_input": 0.0116,
+      "cost_output": 0.1645,
+      "cost_cache_create": 4.6924,
+      "cost_cache_read": 5.2121,
+      "cache_efficiency": 92.77
+    },
+    {
+      "date": "2026-07-15",
+      "total_cost": 13.2609,
+      "total_tokens": 27923168,
+      "cost_input": 0.0141,
+      "cost_output": 0.2468,
+      "cost_cache_create": 5.5354,
+      "cost_cache_read": 7.4646,
+      "cache_efficiency": 94.38
+    },
+    {
+      "date": "2026-07-16",
+      "total_cost": 9.5027,
+      "total_tokens": 25738709,
+      "cost_input": 0.0056,
+      "cost_output": 0.0924,
+      "cost_cache_create": 3.5219,
+      "cost_cache_read": 5.8827,
+      "cache_efficiency": 95.46
+    },
+    {
+      "date": "2026-07-17",
+      "total_cost": 14.8727,
+      "total_tokens": 32564270,
+      "cost_input": 0.0044,
+      "cost_output": 0.2609,
+      "cost_cache_create": 5.0805,
+      "cost_cache_read": 9.5268,
+      "cache_efficiency": 96.05
+    },
+    {
+      "date": "2026-07-18",
+      "total_cost": 12.3848,
+      "total_tokens": 22695243,
+      "cost_input": 0.0041,
+      "cost_output": 0.1348,
+      "cost_cache_create": 5.9153,
+      "cost_cache_read": 6.3307,
+      "cache_efficiency": 94.3
+    },
+    {
+      "date": "2026-07-19",
+      "total_cost": 10.1136,
+      "total_tokens": 21853075,
+      "cost_input": 0.0112,
+      "cost_output": 0.1658,
+      "cost_cache_create": 5.4577,
+      "cost_cache_read": 4.479,
+      "cache_efficiency": 94.14
+    },
+    {
+      "date": "2026-07-20",
+      "total_cost": 15.2455,
+      "total_tokens": 26464609,
+      "cost_input": 0.0042,
+      "cost_output": 0.1947,
+      "cost_cache_create": 6.0671,
+      "cost_cache_read": 8.9794,
+      "cache_efficiency": 94.19
+    },
+    {
+      "date": "2026-07-21",
+      "total_cost": 11.4221,
+      "total_tokens": 24571101,
+      "cost_input": 0.0136,
+      "cost_output": 0.3172,
+      "cost_cache_create": 2.2793,
+      "cost_cache_read": 8.812,
+      "cache_efficiency": 97.37
+    }
+  ],
   "request_statistics": {
     "input_tokens": {
       "mean": 1717.7619047619048,

@@ -25,15 +25,13 @@ from .constants import (
     DEFAULT_RAW_DATA_PATH,
     DEFAULT_SINCE_DATE,
 )
+from .dashboard import generate_dashboard_html
 from .data_source import (
     fetch_raw_usage_data,
     load_raw_usage_data,
 )
 from .pricing import resolve_pricing_map
-from .reporting import (
-    generate_markdown_report,
-    generate_quarto_report,
-)
+from .reporting import generate_markdown_report
 
 logging.basicConfig(
     level=logging.INFO,
@@ -156,9 +154,9 @@ def _write_outputs(
     md_file.write_text(generate_markdown_report(analysis), encoding="utf-8")
     logger.info("Saved Markdown report to: %s", md_file)
 
-    qmd_file = output_dir / "claude-usage-report.qmd"
-    qmd_file.write_text(generate_quarto_report(analysis), encoding="utf-8")
-    logger.info("Saved Quarto report to: %s", qmd_file)
+    dashboard_file = output_dir / "tokenomics-dashboard.html"
+    dashboard_file.write_text(generate_dashboard_html(analysis), encoding="utf-8")
+    logger.info("Saved HTML dashboard to: %s", dashboard_file)
 
     if generate_token_distribution_chart(analysis, output_dir) is None:
         logger.info("Skipped distribution chart (matplotlib unavailable or no data).")
