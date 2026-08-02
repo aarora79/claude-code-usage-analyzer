@@ -1,355 +1,532 @@
 {
   "metadata": {
     "analysis_period": {
-      "start_date": "2025-09-10",
-      "end_date": "2025-10-10",
-      "total_days": 31
+      "start_date": "2026-07-01",
+      "end_date": "2026-07-21",
+      "total_days": 21
     },
-    "generated_at": "2025-10-10T00:46:15.261257",
+    "generated_at": "2026-08-02T23:05:10.437921",
     "source": "ccusage CLI tool",
     "pricing_source": "https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json"
   },
   "summary": {
-    "total_cost": 98.26390438499999,
-    "total_tokens": 112150494.6,
-    "total_input_tokens": 17884.7,
-    "total_output_tokens": 122907.6,
-    "total_cache_creation_tokens": 8234895.1,
-    "total_cache_read_tokens": 103774807.2,
-    "overall_cache_efficiency": 9.253174278912187
+    "total_cost": 250.2459,
+    "total_tokens": 533035939,
+    "total_input_tokens": 72146,
+    "total_output_tokens": 288186,
+    "total_cache_creation_tokens": 23807770,
+    "total_cache_read_tokens": 508867837,
+    "overall_cache_efficiency": 95.46595262500678
   },
   "model_combinations": [
     {
       "models": [
-        "opus-4-1",
-        "sonnet-4"
+        "haiku-4-5",
+        "opus-4-8"
       ],
-      "days": 19
-    },
-    {
-      "models": [
-        "sonnet-4-5"
-      ],
-      "days": 6
-    },
-    {
-      "models": [
-        "sonnet-4",
-        "sonnet-4-5"
-      ],
-      "days": 5
-    },
-    {
-      "models": [
-        "sonnet-4"
-      ],
-      "days": 1
+      "days": 21
     }
   ],
   "daily_statistics": {
     "input_tokens": {
-      "mean": 576.9258064516129,
-      "median": 138.2,
-      "p95": 3031.55,
-      "min": 12.8,
-      "max": 3210.1,
-      "total": 17884.7
+      "mean": 3435.5238095238096,
+      "median": 3342,
+      "p95": 4899.0,
+      "min": 1403,
+      "max": 5045,
+      "total": 72146
     },
     "output_tokens": {
-      "mean": 3964.7612903225804,
-      "median": 2411.9,
-      "p95": 10138.1,
-      "min": 25.4,
-      "max": 15549.1,
-      "total": 122907.6
+      "mean": 13723.142857142857,
+      "median": 13455,
+      "p95": 20694.0,
+      "min": 7392,
+      "max": 21471,
+      "total": 288186
     },
     "cache_create": {
-      "mean": 265641.7774193549,
-      "median": 269994.2,
-      "p95": 485035.7,
-      "min": 6533.3,
-      "max": 488901.3,
-      "total": 8234895.1
+      "mean": 1133703.3333333333,
+      "median": 1157641,
+      "p95": 1524400.0,
+      "min": 621021,
+      "max": 1553078,
+      "total": 23807770
     },
     "cache_read": {
-      "mean": 3347574.4258064516,
-      "median": 3054974.2,
-      "p95": 6790986.45,
-      "min": 13910.9,
-      "max": 9962503.8,
-      "total": 103774807.2
+      "mean": 24231801.76190476,
+      "median": 24570334,
+      "p95": 32735970.0,
+      "min": 13649012,
+      "max": 33003449,
+      "total": 508867837
     },
     "total_tokens": {
-      "mean": 3617757.890322581,
-      "median": 3258259.6,
-      "p95": 7266553.05,
-      "min": 20589.4,
-      "max": 10382981.9,
-      "total": 112150494.6
+      "mean": 25382663.76190476,
+      "median": 25738709,
+      "p95": 33808622.0,
+      "min": 14784440,
+      "max": 34360257,
+      "total": 533035939
     },
     "total_cost": {
-      "mean": 3.1698033672580648,
-      "median": 2.9535378299999997,
-      "p95": 6.515320072500001,
-      "min": 0.11368702500000001,
-      "max": 7.528642365000005,
-      "total": 98.263904385
+      "mean": 11.916471428571429,
+      "median": 11.8722,
+      "p95": 15.2455,
+      "min": 8.2072,
+      "max": 15.7699,
+      "total": 250.2459
     },
     "cost_input": {
-      "mean": 0.0019327645161290323,
-      "median": 0.000735,
-      "p95": 0.00931125,
-      "min": 3.84e-05,
-      "max": 0.0096303,
-      "total": 0.0599157
+      "mean": 0.009802190476190476,
+      "median": 0.010736,
+      "p95": 0.015298,
+      "min": 0.00406,
+      "max": 0.016783000000000003,
+      "total": 0.205846
     },
     "cost_output": {
-      "mean": 0.096018,
-      "median": 0.0812325,
-      "p95": 0.25412850000000003,
-      "min": 0.000381,
-      "max": 0.3400065,
-      "total": 2.976558
+      "mean": 0.1931947619047619,
+      "median": 0.17255,
+      "p95": 0.31725,
+      "min": 0.09238,
+      "max": 0.333195,
+      "total": 4.0570900000000005
     },
     "cost_cache_create": {
-      "mean": 1.4963730362903225,
-      "median": 1.3550887499999997,
-      "p95": 2.643945375,
-      "min": 0.090490875,
-      "max": 4.2682023749999995,
-      "total": 46.387564125
+      "mean": 4.441149404761905,
+      "median": 4.6595575,
+      "p95": 5.9153,
+      "min": 2.2792712500000003,
+      "max": 6.067115000000001,
+      "total": 93.2641375
     },
     "cost_cache_read": {
-      "mean": 1.5754795664516128,
-      "median": 1.21560489,
-      "p95": 3.606045135,
-      "min": 0.018403350000000002,
-      "max": 4.53064554,
-      "total": 48.839866560000004
+      "mean": 7.27233488095238,
+      "median": 7.464628099999999,
+      "p95": 9.740424099999998,
+      "min": 3.980322,
+      "max": 10.383433,
+      "total": 152.7190325
     },
     "cache_efficiency": {
-      "mean": 9.012908097918778,
-      "median": 9.13803141815912,
-      "p95": 9.558526050813004,
-      "min": 6.756340641300864,
-      "max": 9.59503146201189,
-      "total": null
+      "mean": 95.31019674721776,
+      "median": 95.72458704436096,
+      "p95": 97.319306578099,
+      "min": 92.32011493164435,
+      "max": 97.3723155506951
+    }
+  },
+  "daily_series": [
+    {
+      "date": "2026-07-01",
+      "total_cost": 8.815,
+      "total_tokens": 19119853,
+      "cost_input": 0.0153,
+      "cost_output": 0.1239,
+      "cost_cache_create": 2.5968,
+      "cost_cache_read": 6.0791,
+      "cache_efficiency": 95.89
+    },
+    {
+      "date": "2026-07-02",
+      "total_cost": 11.8722,
+      "total_tokens": 24219524,
+      "cost_input": 0.0168,
+      "cost_output": 0.286,
+      "cost_cache_create": 2.8588,
+      "cost_cache_read": 8.7106,
+      "cache_efficiency": 96.94
+    },
+    {
+      "date": "2026-07-03",
+      "total_cost": 15.7699,
+      "total_tokens": 34360257,
+      "cost_input": 0.0058,
+      "cost_output": 0.2013,
+      "cost_cache_create": 5.8225,
+      "cost_cache_read": 9.7404,
+      "cache_efficiency": 96.05
+    },
+    {
+      "date": "2026-07-04",
+      "total_cost": 11.6087,
+      "total_tokens": 23073552,
+      "cost_input": 0.0148,
+      "cost_output": 0.2546,
+      "cost_cache_create": 3.7032,
+      "cost_cache_read": 7.6361,
+      "cache_efficiency": 96.28
+    },
+    {
+      "date": "2026-07-05",
+      "total_cost": 9.5025,
+      "total_tokens": 17181174,
+      "cost_input": 0.0107,
+      "cost_output": 0.2269,
+      "cost_cache_create": 4.205,
+      "cost_cache_read": 5.0599,
+      "cache_efficiency": 94.08
+    },
+    {
+      "date": "2026-07-06",
+      "total_cost": 12.0484,
+      "total_tokens": 26514812,
+      "cost_input": 0.0115,
+      "cost_output": 0.1213,
+      "cost_cache_create": 4.6596,
+      "cost_cache_read": 7.2561,
+      "cache_efficiency": 96.09
+    },
+    {
+      "date": "2026-07-07",
+      "total_cost": 10.584,
+      "total_tokens": 24400236,
+      "cost_input": 0.0144,
+      "cost_output": 0.1351,
+      "cost_cache_create": 5.2048,
+      "cost_cache_read": 5.2297,
+      "cache_efficiency": 94.3
+    },
+    {
+      "date": "2026-07-08",
+      "total_cost": 12.3108,
+      "total_tokens": 27743456,
+      "cost_input": 0.0061,
+      "cost_output": 0.1122,
+      "cost_cache_create": 2.6549,
+      "cost_cache_read": 9.5376,
+      "cache_efficiency": 97.32
+    },
+    {
+      "date": "2026-07-09",
+      "total_cost": 12.5608,
+      "total_tokens": 26899219,
+      "cost_input": 0.0059,
+      "cost_output": 0.2456,
+      "cost_cache_create": 4.2849,
+      "cost_cache_read": 8.0245,
+      "cache_efficiency": 95.98
+    },
+    {
+      "date": "2026-07-10",
+      "total_cost": 14.7703,
+      "total_tokens": 33808622,
+      "cost_input": 0.0113,
+      "cost_output": 0.1516,
+      "cost_cache_create": 4.224,
+      "cost_cache_read": 10.3834,
+      "cache_efficiency": 96.83
+    },
+    {
+      "date": "2026-07-11",
+      "total_cost": 13.6789,
+      "total_tokens": 31185432,
+      "cost_input": 0.0073,
+      "cost_output": 0.1726,
+      "cost_cache_create": 5.5673,
+      "cost_cache_read": 7.9317,
+      "cache_efficiency": 95.72
+    },
+    {
+      "date": "2026-07-12",
+      "total_cost": 8.2072,
+      "total_tokens": 14784440,
+      "cost_input": 0.0091,
+      "cost_output": 0.1158,
+      "cost_cache_create": 4.102,
+      "cost_cache_read": 3.9803,
+      "cache_efficiency": 92.32
+    },
+    {
+      "date": "2026-07-13",
+      "total_cost": 11.6344,
+      "total_tokens": 27722777,
+      "cost_input": 0.0082,
+      "cost_output": 0.3332,
+      "cost_cache_create": 4.8308,
+      "cost_cache_read": 6.4622,
+      "cache_efficiency": 95.06
+    },
+    {
+      "date": "2026-07-14",
+      "total_cost": 10.0805,
+      "total_tokens": 20212410,
+      "cost_input": 0.0116,
+      "cost_output": 0.1645,
+      "cost_cache_create": 4.6924,
+      "cost_cache_read": 5.2121,
+      "cache_efficiency": 92.77
+    },
+    {
+      "date": "2026-07-15",
+      "total_cost": 13.2609,
+      "total_tokens": 27923168,
+      "cost_input": 0.0141,
+      "cost_output": 0.2468,
+      "cost_cache_create": 5.5354,
+      "cost_cache_read": 7.4646,
+      "cache_efficiency": 94.38
+    },
+    {
+      "date": "2026-07-16",
+      "total_cost": 9.5027,
+      "total_tokens": 25738709,
+      "cost_input": 0.0056,
+      "cost_output": 0.0924,
+      "cost_cache_create": 3.5219,
+      "cost_cache_read": 5.8827,
+      "cache_efficiency": 95.46
+    },
+    {
+      "date": "2026-07-17",
+      "total_cost": 14.8727,
+      "total_tokens": 32564270,
+      "cost_input": 0.0044,
+      "cost_output": 0.2609,
+      "cost_cache_create": 5.0805,
+      "cost_cache_read": 9.5268,
+      "cache_efficiency": 96.05
+    },
+    {
+      "date": "2026-07-18",
+      "total_cost": 12.3848,
+      "total_tokens": 22695243,
+      "cost_input": 0.0041,
+      "cost_output": 0.1348,
+      "cost_cache_create": 5.9153,
+      "cost_cache_read": 6.3307,
+      "cache_efficiency": 94.3
+    },
+    {
+      "date": "2026-07-19",
+      "total_cost": 10.1136,
+      "total_tokens": 21853075,
+      "cost_input": 0.0112,
+      "cost_output": 0.1658,
+      "cost_cache_create": 5.4577,
+      "cost_cache_read": 4.479,
+      "cache_efficiency": 94.14
+    },
+    {
+      "date": "2026-07-20",
+      "total_cost": 15.2455,
+      "total_tokens": 26464609,
+      "cost_input": 0.0042,
+      "cost_output": 0.1947,
+      "cost_cache_create": 6.0671,
+      "cost_cache_read": 8.9794,
+      "cache_efficiency": 94.19
+    },
+    {
+      "date": "2026-07-21",
+      "total_cost": 11.4221,
+      "total_tokens": 24571101,
+      "cost_input": 0.0136,
+      "cost_output": 0.3172,
+      "cost_cache_create": 2.2793,
+      "cost_cache_read": 8.812,
+      "cache_efficiency": 97.37
+    }
+  ],
+  "request_statistics": {
+    "input_tokens": {
+      "mean": 1717.7619047619048,
+      "median": 1591.5,
+      "p75": 2453.75,
+      "p95": 2881.05,
+      "p99": 2987.52,
+      "min": 247,
+      "max": 2999,
+      "total": 72146,
+      "count": 42
+    },
+    "output_tokens": {
+      "mean": 6861.571428571428,
+      "median": 6772.0,
+      "p75": 8982.5,
+      "p95": 11191.5,
+      "p99": 11253.05,
+      "min": 2520,
+      "max": 11292,
+      "total": 288186,
+      "count": 42
+    },
+    "cache_write_tokens": {
+      "mean": 566851.6666666666,
+      "median": 570686.0,
+      "p75": 699347.5,
+      "p95": 834179.2999999999,
+      "p99": 864295.3600000001,
+      "min": 300599,
+      "max": 865158,
+      "total": 23807770,
+      "count": 42
+    },
+    "cache_read_tokens": {
+      "mean": 12115900.88095238,
+      "median": 12141949.0,
+      "p75": 15851705.25,
+      "p95": 17084611.7,
+      "p99": 17656235.71,
+      "min": 6054447,
+      "max": 17774590,
+      "total": 508867837,
+      "count": 42
+    },
+    "total_tokens": {
+      "mean": 12691331.88095238,
+      "median": 12747823.5,
+      "p75": 16349711.0,
+      "p95": 17509834.8,
+      "p99": 18225097.509999998,
+      "min": 6836781,
+      "max": 18361623,
+      "total": 533035939,
+      "count": 42
     }
   },
   "model_statistics": {
-    "sonnet-4": {
-      "days_used": 25,
-      "cache_efficiency": 9.347507396677038,
+    "opus-4-8": {
+      "days_used": 21,
+      "cache_efficiency": 95.1896343534954,
       "pricing_per_million_tokens": {
-        "input": 0.3,
-        "output": 1.5,
-        "cache_create": 0.375,
-        "cache_read": 0.03
+        "input": 5.0,
+        "output": 25.0,
+        "cache_create": 6.25,
+        "cache_read": 0.5
       },
       "statistics": {
         "input_tokens": {
-          "mean": 282.404,
-          "median": 94.5,
-          "p95": 1730.659999999995,
-          "total": 7060.1
+          "mean": 1591.6666666666667,
+          "median": 1655,
+          "p95": 2819.0,
+          "total": 33425
         },
         "output_tokens": {
-          "mean": 4012.1440000000002,
-          "median": 3089.3,
-          "p95": 10523.039999999992,
-          "total": 100303.6
+          "mean": 6228.952380952381,
+          "median": 5432,
+          "p95": 10935.0,
+          "total": 130808
         },
         "cache_create": {
-          "mean": 186675.008,
-          "median": 173469.4,
-          "p95": 422052.97999999986,
-          "total": 4666875.2
+          "mean": 604804.0476190476,
+          "median": 591476,
+          "p95": 832323.0,
+          "total": 12700885
         },
         "cache_read": {
-          "mean": 2735800.112,
-          "median": 2550444.4,
-          "p95": 6215837.459999996,
-          "total": 68395002.8
+          "mean": 12122886.761904761,
+          "median": 12073292,
+          "p95": 17094157.0,
+          "total": 254580622
         },
         "total_cost": {
-          "mean": 1.5818006855999998,
-          "median": 1.598496345000001,
-          "p95": 3.4482991679999975,
-          "total": 39.54501714
+          "mean": 10.005138095238095,
+          "median": 10.3219,
+          "p95": 13.3877,
+          "total": 210.1079
         },
         "total_tokens": {
-          "mean": 2926769.668,
-          "median": 2763419.4,
-          "p95": 6619184.419999996,
-          "total": 73169241.7
+          "mean": 12735511.42857143,
+          "median": 12803706,
+          "p95": 17446333.0,
+          "total": 267445740
         },
         "cost_input": {
-          "mean": 0.000847212,
-          "median": 0.0002835,
-          "p95": 0.005191979999999987,
-          "total": 0.0211803
+          "mean": 0.007958333333333335,
+          "median": 0.008275000000000001,
+          "p95": 0.014095000000000002,
+          "total": 0.16712500000000002
         },
         "cost_output": {
-          "mean": 0.060182160000000005,
-          "median": 0.0463395,
-          "p95": 0.15784559999999992,
-          "total": 1.5045540000000002
+          "mean": 0.15572380952380954,
+          "median": 0.1358,
+          "p95": 0.27337500000000003,
+          "total": 3.2702
         },
         "cost_cache_create": {
-          "mean": 0.70003128,
-          "median": 0.6505102500000001,
-          "p95": 1.5826986749999996,
-          "total": 17.500782
+          "mean": 3.780025297619048,
+          "median": 3.6967250000000003,
+          "p95": 5.202018750000001,
+          "total": 79.38053125
         },
         "cost_cache_read": {
-          "mean": 0.8207400335999999,
-          "median": 0.76513332,
-          "p95": 1.8647512379999989,
-          "total": 20.518500839999998
+          "mean": 6.0614433809523804,
+          "median": 6.036645999999999,
+          "p95": 8.5470785,
+          "total": 127.29031099999999
         }
       }
     },
-    "opus-4-1": {
-      "days_used": 19,
-      "cache_efficiency": 9.333822545269147,
+    "haiku-4-5": {
+      "days_used": 21,
+      "cache_efficiency": 95.7442013889978,
       "pricing_per_million_tokens": {
-        "input": 1.5,
-        "output": 7.5,
-        "cache_create": 1.875,
-        "cache_read": 0.15
+        "input": 1.0,
+        "output": 5.0,
+        "cache_create": 1.25,
+        "cache_read": 0.09999999999999999
       },
       "statistics": {
         "input_tokens": {
-          "mean": 27.463157894736845,
-          "median": 26.8,
-          "p95": 47.61999999999996,
-          "total": 521.8
+          "mean": 1843.857142857143,
+          "median": 1527,
+          "p95": 2884.0,
+          "total": 38721
         },
         "output_tokens": {
-          "mean": 993.8105263157895,
-          "median": 970.5,
-          "p95": 1891.8499999999985,
-          "total": 18882.4
+          "mean": 7494.190476190476,
+          "median": 7514,
+          "p95": 11195.0,
+          "total": 157378
         },
         "cache_create": {
-          "mean": 54409.5,
-          "median": 50196.0,
-          "p95": 99257.77999999984,
-          "total": 1033780.5
+          "mean": 528899.2857142857,
+          "median": 487330,
+          "p95": 834277.0,
+          "total": 11106885
         },
         "cache_read": {
-          "mean": 776641.4210526316,
-          "median": 834652.3,
-          "p95": 1454563.469999999,
-          "total": 14756187.0
+          "mean": 12108915,
+          "median": 12210606,
+          "p95": 16903251.0,
+          "total": 254287215
         },
         "total_cost": {
-          "mean": 2.2600879934210525,
-          "median": 2.5120512,
-          "p95": 3.8225120699999997,
-          "total": 42.941671875
+          "mean": 1.9113333333333333,
+          "median": 1.8519,
+          "p95": 2.5548,
+          "total": 40.138
         },
         "total_tokens": {
-          "mean": 832072.1947368421,
-          "median": 898951.9,
-          "p95": 1516137.129999999,
-          "total": 15809371.7
+          "mean": 12647152.333333334,
+          "median": 12691941,
+          "p95": 17513177.0,
+          "total": 265590199
         },
         "cost_input": {
-          "mean": 0.00041194736842105264,
-          "median": 0.000402,
-          "p95": 0.0007142999999999994,
-          "total": 0.007827
+          "mean": 0.0018438571428571427,
+          "median": 0.001527,
+          "p95": 0.002884,
+          "total": 0.038721
         },
         "cost_output": {
-          "mean": 0.0745357894736842,
-          "median": 0.07278749999999999,
-          "p95": 0.1418887499999999,
-          "total": 1.41618
+          "mean": 0.03747095238095238,
+          "median": 0.037570000000000006,
+          "p95": 0.055975000000000004,
+          "total": 0.7868900000000001
         },
         "cost_cache_create": {
-          "mean": 1.020178125,
-          "median": 0.941175,
-          "p95": 1.8610833749999973,
-          "total": 19.383384375
+          "mean": 0.6611241071428572,
+          "median": 0.6091625,
+          "p95": 1.04284625,
+          "total": 13.883606250000001
         },
         "cost_cache_read": {
-          "mean": 1.1649621315789473,
-          "median": 1.25197845,
-          "p95": 2.181845204999999,
-          "total": 22.1342805
-        }
-      }
-    },
-    "sonnet-4-5": {
-      "days_used": 11,
-      "cache_efficiency": 8.900277548462487,
-      "pricing_per_million_tokens": {
-        "input": 0.3,
-        "output": 1.5,
-        "cache_create": 0.375,
-        "cache_read": 0.03
-      },
-      "statistics": {
-        "input_tokens": {
-          "mean": 936.6181818181818,
-          "median": 918.5,
-          "p95": 2215.75,
-          "total": 10302.8
-        },
-        "output_tokens": {
-          "mean": 338.32727272727277,
-          "median": 358.3,
-          "p95": 768.4,
-          "total": 3721.6
-        },
-        "cache_create": {
-          "mean": 230385.4,
-          "median": 216728.0,
-          "p95": 428519.05,
-          "total": 2534239.4
-        },
-        "cache_read": {
-          "mean": 1874874.309090909,
-          "median": 1705397.3,
-          "p95": 4135899.9,
-          "total": 20623617.4
-        },
-        "total_cost": {
-          "mean": 1.4342923063636364,
-          "median": 1.3536387899999993,
-          "p95": 2.742718170000001,
-          "total": 15.777215369999999
-        },
-        "total_tokens": {
-          "mean": 2106534.654545455,
-          "median": 1860544.2,
-          "p95": 4535082.1,
-          "total": 23171881.2
-        },
-        "cost_input": {
-          "mean": 0.0028098545454545458,
-          "median": 0.0027555,
-          "p95": 0.00664725,
-          "total": 0.030908400000000003
-        },
-        "cost_output": {
-          "mean": 0.005074909090909091,
-          "median": 0.0053745,
-          "p95": 0.011526,
-          "total": 0.055824000000000006
-        },
-        "cost_cache_create": {
-          "mean": 0.8639452500000001,
-          "median": 0.81273,
-          "p95": 1.6069464375,
-          "total": 9.503397750000001
-        },
-        "cost_cache_read": {
-          "mean": 0.5624622927272728,
-          "median": 0.51161919,
-          "p95": 1.24076997,
-          "total": 6.18708522
+          "mean": 1.2108915,
+          "median": 1.2210606,
+          "p95": 1.6903251,
+          "total": 25.428721499999998
         }
       }
     }
